@@ -7,8 +7,9 @@ A reproducible pipeline that collects Tanzanian data on natural gas utilisation,
 ```powershell
 cd "C:\Users\HomePC\Desktop\web scraping"
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
-# optional: a contact address to include in the User-Agent
-$env:TZ_SCRAPER_CONTACT = "you@example.org"
+# optional: override the contact address in the User-Agent
+# (default: 92087158+AbbotAntony@users.noreply.github.com)
+$env:TZ_SCRAPER_CONTACT = "92087158+AbbotAntony@users.noreply.github.com"
 ```
 
 ## Running

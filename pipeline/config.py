@@ -12,7 +12,8 @@ CACHE_DIR: Path = RAW_DIR / "_cache"
 PROCESSED_DIR: Path = DATA_DIR / "processed"
 LOG_DIR: Path = PROJECT_ROOT / "logs"
 
-_CONTACT: str = os.environ.get("TZ_SCRAPER_CONTACT", "").strip()
+_CONTACT: str = os.environ.get(
+    "TZ_SCRAPER_CONTACT", "92087158+AbbotAntony@users.noreply.github.com").strip()
 USER_AGENT: str = (
     "TZEnergyResearch/0.1 (academic research on Tanzanian natural gas "
     "and petroleum statistics" + (f"; contact: {_CONTACT}" if _CONTACT else "") + ")"
