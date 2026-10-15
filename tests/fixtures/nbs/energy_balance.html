@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Language" content="en">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+      <meta name="description" content="The National Bureau of Statistics (NBS) has been established as an autonomous public office by the Statistics Act, 2015 and has the mandate to provide official statistics to the Government, b |     Energy Balance
+">
+    <meta name="keywords" content="NBS,Statistics,Tanzania National Bureau of Statistics (TNBS),Statistics Tanzania,Tanzania GDP,Census,Tanzania Population , NBS,Takwimu,Ofisi ya Taifa ya Takwimu,Takwimu Tanzania,Pato la Taifa la tanzania,Sensa,Idadi ya Watu ">
+    <meta name="msapplication-TileColor" content="#ffffff">
+  <meta name="msapplication-TileImage" content="/ms-icon-144x144.png">
+  <meta name="theme-color" content="#264a8f">
+  <meta name="apple-mobile-web-app-status-bar-style" content="#264a8f">
+  <meta name="google-site-verification" content="TjSPJkxD7H4HEEpeJGEl-vCbG8qhI86viR5EVpPN-9Q" />
+
+  <title> NBS |     Energy Balance
+ </title>
+
+  <!-- favicons -->
+  <link rel="icon" href="https://www.nbs.go.tz/site/images/icon/logo.png">
+
+  <link rel="stylesheet" href="https://www.nbs.go.tz/site/css/master.min.css">
+
+  <style type="text/css">
+
+    body,html {
+      font-family: Quicksand,sans-serif;
+    }
+
+    /* Top-bar-marque background */
+    .top-bar-marque{
+      background-color: #0272a7;
+    }
+
+    /* for google iframe */
+    .google-map iframe{
+      height:100%;
+      width:100%;
+    }
+
+    /* for google recaptcha */
+    .g-recaptcha-bubble-arrow{
+      display: none;
+    }
+    .g-recaptcha-bubble-arrow + div{
+      position: fixed !important;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      -webkit-transform: translate(-50%, -50%);
+    }
+
+    /* control rending on rich text, for temporary use */
+    .rich-text p{
+      text-align: justify;
+    }
+    .rich-text img{
+      max-width: 100% !important;
+      height: auto !important;
+    }
+    .rich-text a{
+      text-decoration: underline !important;
+      color: #0c71b5;
+    }
+    .rich-text a:hover{
+      color: #edc91e;
+    }
+    .rich-text table{
+      max-width: 100% !important;
+    }
+    .breadcrumb-item{
+      text-transform: none !important;
+    }
+
+    
+    /* Right Settings Panel Styles */
+    .settings-panel {
+      position: fixed;
+      right: -300px;
+      top: 0;
+      height: 100%;
+      width: 300px;
+      background: #f8f9fa;
+      z-index: 9999;
+      transition: all 0.3s ease;
+      box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+      overflow-y: auto;
+    }
+    
+    .settings-panel.open {
+      right: 0;
+    }
+    
+    .settings-toggle {
+      position: fixed;
+      right: 33px;
+      bottom: 200px;
+      transform: translateY(-50%);
+      background: rgb(33, 159, 148);
+      color: white;
+      padding: 10px 12px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 9998;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.2);
+      animation: moveDown 2s ease-in-out infinite;
+    }
+
+    @keyframes moveDown {
+      0%, 100% {
+          transform: translateY(-50%);
+      }
+      50% {
+          transform: translateY(-30%); /* moves down */
+      }
+    }
+    
+    .settings-header {
+      background: rgb(33, 159, 148);
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .settings-content {
+      padding: 20px;
+    }
+    
+    .settings-section {
+      margin-bottom: 25px;
+    }
+    
+    .settings-section h3 {
+      font-size: 16px;
+      margin-bottom: 15px;
+      color: rgb(33, 159, 148);
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 8px;
+    }
+    
+    .font-size-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    
+    .font-size-btn {
+      background: #e9ecef;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    
+    .font-size-btn.active {
+      background: rgb(33, 159, 148);
+      color: white;
+    }
+      .reset-settings {
+      background:rgb(153 151 151);
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 20px;
+    }
+    
+    .language-selector {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    
+    .lang-btn {
+      padding: 10px;
+      background: #e9ecef;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-align: left;
+    }
+    
+    .lang-btn.active {
+      background: rgb(33, 159, 148);
+      color: white;
+    }
+    
+
+    
+    /* Root (html) classes for text scaling so everything enlarges consistently */
+    html.large-text {
+      font-size: 115% !important; /* ~18.4px if base is 16px */
+      line-height: 1.6 !important;
+      -webkit-text-size-adjust: 115% !important;
+      text-size-adjust: 115% !important;
+    }
+    
+    html.larger-text {
+      font-size: 130% !important; /* ~20.8px if base is 16px */
+      line-height: 1.7 !important;
+      -webkit-text-size-adjust: 130% !important;
+      text-size-adjust: 130% !important;
+    }
+
+    /* Ensure common UI elements inherit font size so root scaling applies even if they had px sizes */
+    html.large-text body,
+    html.larger-text body,
+    html.large-text .navbar,
+    html.larger-text .navbar,
+    html.large-text .main-navigation,
+    html.larger-text .main-navigation,
+    html.large-text .nav-link,
+    html.larger-text .nav-link,
+    html.large-text .menu-parent,
+    html.larger-text .menu-parent,
+    html.large-text .btn,
+    html.larger-text .btn,
+    html.large-text footer,
+    html.larger-text footer,
+    html.large-text .footer,
+    html.larger-text .footer,
+    html.large-text .site-footer,
+    html.larger-text .site-footer,
+    html.large-text .page-footer,
+    html.larger-text .page-footer,
+    html.large-text input,
+    html.larger-text input,
+    html.large-text select,
+    html.larger-text select,
+    html.large-text textarea,
+    html.larger-text textarea,
+    html.large-text table,
+    html.larger-text table,
+    html.large-text .card,
+    html.larger-text .card,
+    html.large-text .modal,
+    html.larger-text .modal,
+    html.large-text .dropdown-menu,
+    html.larger-text .dropdown-menu {
+      font-size: 1em !important; /* inherit from html */
+    }
+
+    /* Ensure footer children inherit scaling, overriding any fixed px sizes */
+    html.large-text footer *,
+    html.large-text .footer *,
+    html.large-text .site-footer *,
+    html.large-text .page-footer *,
+    html.larger-text footer *,
+    html.larger-text .footer *,
+    html.larger-text .site-footer *,
+    html.larger-text .page-footer * {
+      font-size: inherit !important;
+      line-height: inherit !important;
+    }
+
+    /* Ensure navigation children inherit scaling, overriding any fixed px sizes */
+    html.large-text .navbar *,
+    html.large-text .main-navigation *,
+    html.large-text .nav-link *,
+    html.large-text .menu-parent *,
+    html.larger-text .navbar *,
+    html.larger-text .main-navigation *,
+    html.larger-text .nav-link *,
+    html.larger-text .menu-parent * {
+      font-size: inherit !important;
+      line-height: inherit !important;
+    }
+
+    /* .bg-top-nav{
+      background-color: #e0e0e0;
+    } */
+    
+ 
+    
+    #mtakwimu-floating-button {
+        bottom: 100px !important;
+        animation: moveDown 2s ease-in-out infinite;
+    }
+
+  </style>
+
+    
+</head> 
+
+
+
+<body>
+  
+<!-- Settings Toggle Button -->
+<div class="settings-toggle" id="settingsToggle">
+    <!-- <i class="fas fa-cog fa-spin"></i> -->
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="currentColor" width="2em">
+						<title>NBS Accessibility Tools</title>
+						<g><path d="M60.4,78.9c-2.2,4.1-5.3,7.4-9.2,9.8c-4,2.4-8.3,3.6-13,3.6c-6.9,0-12.8-2.4-17.7-7.3c-4.9-4.9-7.3-10.8-7.3-17.7c0-5,1.4-9.5,4.1-13.7c2.7-4.2,6.4-7.2,10.9-9.2l-0.9-7.3c-6.3,2.3-11.4,6.2-15.3,11.8C7.9,54.4,6,60.6,6,67.3c0,5.8,1.4,11.2,4.3,16.1s6.8,8.8,11.7,11.7c4.9,2.9,10.3,4.3,16.1,4.3c7,0,13.3-2.1,18.9-6.2c5.7-4.1,9.6-9.5,11.7-16.2l-5.7-11.4C63.5,70.4,62.5,74.8,60.4,78.9z"></path><path d="M93.8,71.3l-11.1,5.5L70,51.4c-0.6-1.3-1.7-2-3.2-2H41.3l-0.9-7.2h22.7v-7.2H39.6L37.5,19c2.5,0.3,4.8-0.5,6.7-2.3c1.9-1.8,2.9-4,2.9-6.6c0-2.5-0.9-4.6-2.6-6.3c-1.8-1.8-3.9-2.6-6.3-2.6c-2,0-3.8,0.6-5.4,1.8c-1.6,1.2-2.7,2.7-3.2,4.6c-0.3,1-0.4,1.8-0.3,2.3l5.4,43.5c0.1,0.9,0.5,1.6,1.2,2.3c0.7,0.6,1.5,0.9,2.4,0.9h26.4l13.4,26.7c0.6,1.3,1.7,2,3.2,2c0.6,0,1.1-0.1,1.6-0.4L97,77.7L93.8,71.3z"></path></g>					
+          </svg>
+  </div>
+  
+  <!-- Settings Panel -->
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-header">
+      <h6>NBS Accessibility Tools</h6>
+      <button id="closeSettings" class="text-white" style="background: none; border: none; font-size: 20px;">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="settings-content">
+      <div class="settings-section">
+        <h3>Text Size</h3>
+        <div class="font-size-controls">
+          <button class="font-size-btn" data-size="normal">Normal</button>
+          <button class="font-size-btn" data-size="large">Large</button>
+          <button class="font-size-btn" data-size="larger">Larger</button>
+        </div>
+      </div>
+      
+      <div class="settings-section">
+        <h3>Language</h3>
+        <div class="language-selector">
+          <a href="https://www.nbs.go.tz/language/en" class="lang-btn" data-lang="en">English</a>
+          <a href="https://www.nbs.go.tz/language/sw" class="lang-btn" data-lang="sw">Kiswahili</a>
+        </div>
+      </div>
+      
+      <button class="reset-settings" id="resetSettings">Reset All Settings</button>
+    </div>
+  </div>
+
+
+  <div class="container max-1920 px-0">
+
+    <!-- HEADER -->
+    <div class="scrolling-text py-1 pr-lg-5  top-bar-marque border-bottom-faded d-flex w-100 align-items-center">
+            <marquee class="col"  onMouseOver="this.stop()" onMouseOut="this.start()" scrollamount="5">
+                                    <a  href="https://www.nbs.go.tz/statistics/topic/consumer-price-index-2026" class="d-inline-block pr-5">
+                        <span class="fa fa-asterisk px-3 text-warning"> </span>
+                        <span class="text-warning"> Inflation Rate for September, 2026: </span>
+                        <span class="bold-600 text-warning"> 4.3% </span>
+                        <span class="fa fa-asterisk px-2 text-warning"></span>
+                    </a>
+                                    <a  href="https://www.nbs.go.tz/statistics/topic/annual-agriculture-sample-surveys" class="d-inline-block pr-5">
+                        <span class="fa fa-asterisk px-3 text-warning"> </span>
+                        <span class="text-warning"> AASS 2023/2024 Women&#039;s Empowerment and Nutrition Module: </span>
+                        <span class="bold-600 text-warning"> WEN </span>
+                        <span class="fa fa-asterisk px-2 text-warning"></span>
+                    </a>
+                                    <a  href="https://www.nbs.go.tz/statistics/topic/environment-statistics" class="d-inline-block pr-5">
+                        <span class="fa fa-asterisk px-3 text-warning"> </span>
+                        <span class="text-warning"> Tanzania Gender and Environment Survey: </span>
+                        <span class="bold-600 text-warning"> TGES 2025 </span>
+                        <span class="fa fa-asterisk px-2 text-warning"></span>
+                    </a>
+                                    <a  href="https://www.nbs.go.tz/statistics/topic/utafiti-wa-kufuatilia-kaya-tanzania-nps-wa-mwaka-wa-6" class="d-inline-block pr-5">
+                        <span class="fa fa-asterisk px-3 text-warning"> </span>
+                        <span class="text-warning"> Utafiti wa Kufuatilia Kaya (National Panel Survey, Wave 6: </span>
+                        <span class="bold-600 text-warning"> NPS 2026 </span>
+                        <span class="fa fa-asterisk px-2 text-warning"></span>
+                    </a>
+                            </marquee>
+        </div>
+<header class="col-12 px-0  mb-0 bg-header-trans bg-radial-gradient-transparent-white-inverteddd">
+  <!-- <div class="h-100 w-100 position-absolute top-left bg-white"
+       style="background:url(https://www.nbs.go.tz/site/images/flag5.jpg); 
+       background-size: cover; background-position: center;">
+  </div> -->
+  <div class="h-100 w-100 position-absolute top-left bg-white"
+       style="background-color:white;">
+  </div>
+  <div class="header-bg h-100 w-100 position-absolute top-left"></div>
+  <div class="header-bg-2 h-100 w-100 position-absolute top-left"></div>
+
+  <!-- top navbar -->
+  <div class="col-12 border-bottommmm shadow-sm bg-top-nav">
+      <div class="row top_nav px-0">
+
+        <div class="col-12 px-0 text-accent text-boldddd d-flex mx-auto justify-content-end align-items-center">
+
+          <div class="d-flex d-none text-accent justify-content-end py-0 pb-0 align-items-center" >
+            <ul class="d-none d-lg-flex px-0 my-0 align-items-center">
+              <li class='list-inline-item pr-2'><a target='_blank' rel='noopener noreferrer' href='https://emrejesho.gov.go.tz/institution-view/6557080462768715449'>e-Mrejesho</a></li><li class='list-inline-item pr-2'><a href='https://www.nbs.go.tz/faqs'>FAQ</a></li><li class='list-inline-item pr-2'><a target='_blank' rel='noopener noreferrer' href='https://mail.nbs.go.tz'>Staff Mail</a></li><li class='list-inline-item pr-2'><a href='https://www.nbs.go.tz/contacts'>Contact Us</a></li>
+            </ul>
+
+            <ul class="px-0 my-0 d-flex align-items-center ">
+              <li class="list-inline-item d-none d-lg-block"> | </li>
+                              <li class="list-inline-item px-2"><a href="https://www.nbs.go.tz/language/sw" class="text-light-dark">KISWAHILI</a></li>
+                            <li class="list-inline-item d-none d-lg-block"> | </li>
+              <li class="list-inline-item">
+                <div class="social-media-horizontal d-flex align-items-center">
+                                                                                <a href="https://www.instagram.com/nbs.tanzania/" target="_blank" rel="noopener noreferrer" class="text-light-dark mx-1" title="instagram">
+                        <i class="fab fa-instagram text-primary"></i>
+                      </a>
+                                          <a href="https://www.facebook.com/OfisiyaTaifayaTakwimu" target="_blank" rel="noopener noreferrer" class="text-light-dark mx-1" title="facebook">
+                        <i class="fab fa-facebook-f text-primary"></i>
+                      </a>
+                                          <a href="https://www.youtube.com/channel/UCs15bGGyez5mWJyhKnKRlNA" target="_blank" rel="noopener noreferrer" class="text-light-dark mx-1" title="youtube">
+                        <i class="fab fa-youtube text-danger"></i>
+                      </a>
+                                          <a href="https://twitter.com/NBSTanzania" target="_blank" rel="noopener noreferrer" class="text-light-dark mx-1" title="twitter">
+                        <i class="fab fa-twitter text-primary"></i>
+                      </a>
+                                                      </div>
+              </li>
+              <!-- <li class="list-inline-item">
+                <div class="search-form px-1  my-0 d-flex text-white  align-items-center justify-content-center">
+                  <form class="form-inline rounded-medium border-primary bg-primaryyyy my-0 overflow-hidden py-0 mr-auto" method="GET" action="https://www.nbs.go.tz/search" style="height:30px">
+                    <input class="form-control border-0 bg-none text-primary" type="search" name="q"  placeholder="Search" aria-label="Search"/>
+                    <button type="submit" class="text-primary  border-left  btn" name="button">
+                      <i class="fas fa-search fa-1x"></i>
+                    </button>
+                  </form>
+                </div>
+              </li> -->
+            </ul>
+          </div>
+
+        </div>
+
+      </div>
+  </div>
+  <!-- /top navbar -->
+
+  <!-- top middle -->
+  <div class="px-0 py-3 position-relative bg-header-trans">
+
+    <div class="col-md-12 mt-0 pt-2 pb-1 top-middle">
+      <div class="container px-0 position-relative">
+        <div class="row">
+          <div class="col-3 col-md-2 text-left my-auto">
+            <a href="https://www.nbs.go.tz">
+              <img src="https://www.nbs.go.tz/site/images/emblem.png" alt="Tanzania emblem" class="mx-auto img-fluid" width="85"/>
+            </a>
+          </div>
+
+          <div class="col-6 p-0 col-md-8 text-center my-auto">
+            <h5 class="my-1 text-shadow-lightt text-primary title align-items-center">
+              The United Republic of Tanzania
+            </h5>
+            <h2 class="mb-1 text-shadow-light text-primary title align-items-center">
+              National Bureau of Statistics
+            </h2>
+            <!-- <h5 class="d-none d-sm-block mb-1 text-shadow-lightt text-dark title align-items-center">
+              Statistics for Development
+            </h5> -->
+          </div>
+
+          <div class="col-3 col-md-2 text-right my-auto">
+            <a href="https://www.nbs.go.tz">
+              <img src=" https://www.nbs.go.tz/site/images/logo-en.png "
+                   alt="NBS Logo" class="mx-auto img-fluid" width="85"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- top middle -->
+
+  <div class="bg-white position-relative" style="height:2px; z-index: 3;"></div>
+
+  <!-- top bottom -->
+  <div class="col-12 px-0 bg-white top-fixed border-bottom-primary" style="padding-bottom:2px; margin-bottom:2px;">
+    <div class="col-md-12 col-xs-12 main-menu  bg-primary d-flex border-top position-relative active justify-content-center align-items-center"
+         style="border-left-width:10px !important; --order:3">
+      <!-- HEADER -->
+      <nav class="navbar main-navigation medium-text p-0 fade-on mx-lg-5 justify-content-start align-items-center" id='cssmenu'>
+        <div id="head-mobile"></div>
+
+        <div class="menu-button text-hover-secondary text-white d-flex align-items-center d-lg-none">
+          <i class="menu-icon fa fa-bars mr-2" style="font-size: 25px;"></i>
+          <span class=" bold-600">MENU</span>
+        </div>
+
+        <ul class="m-0 capitalize-parent-itemsss d-lg-flex">
+          <li class="menu-parent"><a class="nav-link" href="https://www.nbs.go.tz/"><span class="fa fa-home  px-2  d-none d-lg-inline"> </span> Home </a></li>
+          <li class='menu-parent drop drop-toggle'><a href='#' class='nav-link' data-toggle='drop'>About Us</a><ul class='drop-menu'><li><a class='drop-item' href= 'https://www.nbs.go.tz/pages/about-us'>Historical Background</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/welcome'>Statement from Statistician General</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/publications/statistics-legislation'>Statistics Legislation</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/pages/services'>Function and Services</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/pages/organisation-structure'>Organisation Structure</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/administration/board-of-directors'>Governing Board</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/administration/management-team'>Management Team</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/publications/nbs-strategic-plan-2021-22-2025-26'>NBS Strategic Plan 2021/22 – 2025/26</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/publications/client-charter'>Client Service Charter</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/publications/tanzania-communication-advocacy-and-dissemination-strategy-for-statistics'>Tanzania Communication, Advocacy and Dissemination Strategy</a></li></ul></li><li class='menu-parent drop drop-toggle'><a href='#' class='nav-link' data-toggle='drop'>Guidelines and Standards</a><ul class='drop-menu'><li><a class='drop-item' href= 'https://www.nbs.go.tz/publications/policies-and-legislations'>Policies</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/pages/fundamental-principles-of-official-statistics'>Fundamental Principles of Official Statistics</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/publications/statistical-guidelines'>Statistical Guidelines</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/publications/data-quality-assessment'>Data Quality Assessment Reports</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/publications/data-quality-assurance'>Data Quality Assurance Framework</a></li></ul></li><li class='menu-parent'><a class='nav-link' href='https://www.nbs.go.tz/portals'>Data Portals</a></li><li class='menu-parent'><a class='nav-link' href='https://www.nbs.go.tz/statistics'>Publications</a></li><li class='menu-parent'><a class='nav-link' href='https://www.nbs.go.tz/publications/sdg'>SDG</a></li><li class='menu-parent drop drop-toggle'><a href='#' class='nav-link' data-toggle='drop'>Media Center</a><ul class='drop-menu'><li><a class='drop-item' href= 'https://www.nbs.go.tz/news'>News</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/events'>Events</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/galleries/listing/photos'>Photo Gallery</a></li><li><a class='drop-item' href= 'https://www.nbs.go.tz/galleries/listing/videos'>Video Gallery</a></li></ul></li><li class='menu-parent'><a class='nav-link' href='https://www.nbs.go.tz/contacts'>Contact Us</a></li><li class='menu-parent'><a class='nav-link' target='_blank' rel='noopener noreferrer' href='https://lmis.nbs.go.tz'>e-Library</a></li><li class='menu-parent'><a class='nav-link' target='_blank' rel='noopener noreferrer' href='https://nso-tanzania.opendataforafrica.org/yolzjif/national-summary-data-page-nsdp'>e-GDDS</a></li>
+        </ul>
+      </nav>
+    </div>
+
+    <div class="col-12 d-lg-none border-bottom-primary"></div>
+  </div>
+  <div class="bg-white position-absolute z-index-2" style="height: 2px; bottom:0"></div>
+  <!-- /top bottom -->
+
+</header>
+    <!-- /HEADER -->
+
+    <!-- contents -->
+        <div class="pages-decorater-top bg-gradient-secondary-transparentttttt position-relative">
+    <div id="particles-js" class="h-100 w-100 top-left position-absolute"></div>
+</div>    <div class="about-page main-container container pages-decorater-bottom bg-white px-3 px-md-5 py-5">
+        <div class="col-12 px-0 pb-5">
+
+            <div class="breadcumb-banner">
+    <div class="banner">
+        <div class="banner-inner">
+            <ol class="breadcrumb fa">
+                <li class="breadcrumb-item"><a href="https://www.nbs.go.tz"> Home </a></li>
+                    <li class="breadcrumb-item"><a href="https://www.nbs.go.tz/statistics">Statistics</a></li>
+    <li class="breadcrumb-item"><a href="https://www.nbs.go.tz/statistics/energy-statistics">Energy Statisti...</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Energy Balance</li>
+            </ol>
+        </div>
+    </div>
+</div>
+            
+    <div class="row page-content my-2">
+        <div class="col-12 pb-2 my-2 border-bottom">
+            <h5 class="mb-0">
+                <div class="d-block  py-1 lines position-relative">
+                    <div class="pr-sm-2 py-1 text-primary  position-relative">
+                        <span class="border-left-primary text-bold  pl-1 "><span class="border-left-secondary-thick pl-2 text-nowrap">Energy Balance</span> </span>
+                    </div>
+                </div>
+            </h5>
+        </div>
+        <div class="col-12 py-4">
+            <div class="row position-relative mt-2 mx-0">
+
+                <div class="col-12">
+                    <div class="row">
+
+
+
+
+                        <div class="col-lg-12">
+                            <div class="rich-text text-justify">
+                                <p style="text-align:justify">The energy balance is an annual statistical report that shows the supply, transformation and final consumption of different energy products and flows in the country. An energy balance is constructed as a matrix showing both energy products (columns) and energy flows (rows). It is prepared for a given calendar year and expressed in a common energy unit. An energy balance provides a comprehensive and consistent picture of the energy situation and trends in Tanzania.</p>
+                            </div>
+
+                            <div class="row py-3 border-top">
+
+                                
+                                <div class=" col-md-12 ">
+
+
+
+                                    <div class="d-flex flex-column">
+                                                                                    <div class="col px-0 pb-2 move-up">
+                                                <div class="d-flex align-items-center bg-light box-shadow  rounded-slight hover-bg h-100 w-100 p-2 pointer-hover  position-relative">
+                                                    <a href="https://www.nbs.go.tz/uploads/statistics/documents/en-1742553339-2022 Energy Balance -Key Insights.pdf" target="_blank" class="d-flex w-100 list-item  align-items-center">
+                                                        <i class="fa fa-angle-double-right  px-2 pr-3  text-faded text-secondary align-self-center"></i>
+                                                        <i class="fa fa-file-pdf px-2 pr-3  text-muted align-self-center"></i>
+                                                        <span class="d-inline-block text-gray">
+                                                        <div class="fs-08em bold-600"> 21 March, 2025 </div>
+                                                        <div> 2022 Energy Balance -Key Insights </div>
+                                                    </span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                                                                    <div class="col px-0 pb-2 move-up">
+                                                <div class="d-flex align-items-center bg-light box-shadow  rounded-slight hover-bg h-100 w-100 p-2 pointer-hover  position-relative">
+                                                    <a href="https://www.nbs.go.tz/uploads/statistics/documents/en-1742553505-2022 Energy Balance - Methodology Report.pdf" target="_blank" class="d-flex w-100 list-item  align-items-center">
+                                                        <i class="fa fa-angle-double-right  px-2 pr-3  text-faded text-secondary align-self-center"></i>
+                                                        <i class="fa fa-file-pdf px-2 pr-3  text-muted align-self-center"></i>
+                                                        <span class="d-inline-block text-gray">
+                                                        <div class="fs-08em bold-600"> 21 March, 2025 </div>
+                                                        <div> 2022 Energy Balance - Methodology Report </div>
+                                                    </span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                                                                    <div class="col px-0 pb-2 move-up">
+                                                <div class="d-flex align-items-center bg-light box-shadow  rounded-slight hover-bg h-100 w-100 p-2 pointer-hover  position-relative">
+                                                    <a href="https://www.nbs.go.tz/uploads/statistics/documents/en-1742553615-NBS 2022 Energy Balance - Excel.xlsx" target="_blank" class="d-flex w-100 list-item  align-items-center">
+                                                        <i class="fa fa-angle-double-right  px-2 pr-3  text-faded text-secondary align-self-center"></i>
+                                                        <i class="fa fa-file-pdf px-2 pr-3  text-muted align-self-center"></i>
+                                                        <span class="d-inline-block text-gray">
+                                                        <div class="fs-08em bold-600"> 21 March, 2025 </div>
+                                                        <div> NBS 2022 Energy Balance - Excel Data </div>
+                                                    </span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                                                            </div>
+
+                                    <div class="py-4 d-flex justify-content-center">
+                                        
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+        </div>
+    </div>
+    <!-- /contents -->
+
+    <!-- social media right -->
+    <!-- <div class="social-media-side d-none d-lg-block">
+        
+                    <a href="https://www.instagram.com/nbs.tanzania/" target="_blank" rel="noopener noreferrer" class="social-media-box d-flex align-items-center justify-content-end">
+                <div class="h-40 d-flex align-items-center social-text bg-primary text-white"> instagram</div>
+                <div class="box-40 d-flex box-shadow-slight cursor-pointer justify-content-center
+                 bg-white border text-primary align-items-center">
+                    <i class="fab fa-instagram"></i>
+                </div>
+            </a>
+                    <a href="https://www.facebook.com/OfisiyaTaifayaTakwimu" target="_blank" rel="noopener noreferrer" class="social-media-box d-flex align-items-center justify-content-end">
+                <div class="h-40 d-flex align-items-center social-text bg-primary text-white"> facebook</div>
+                <div class="box-40 d-flex box-shadow-slight cursor-pointer justify-content-center
+                 bg-white border text-primary align-items-center">
+                    <i class="fab fa-facebook-f"></i>
+                </div>
+            </a>
+                    <a href="https://www.youtube.com/channel/UCs15bGGyez5mWJyhKnKRlNA" target="_blank" rel="noopener noreferrer" class="social-media-box d-flex align-items-center justify-content-end">
+                <div class="h-40 d-flex align-items-center social-text bg-primary text-white"> youtube</div>
+                <div class="box-40 d-flex box-shadow-slight cursor-pointer justify-content-center
+                 bg-white border text-primary align-items-center">
+                    <i class="fab fa-youtube"></i>
+                </div>
+            </a>
+                    <a href="https://twitter.com/NBSTanzania" target="_blank" rel="noopener noreferrer" class="social-media-box d-flex align-items-center justify-content-end">
+                <div class="h-40 d-flex align-items-center social-text bg-primary text-white"> twitter</div>
+                <div class="box-40 d-flex box-shadow-slight cursor-pointer justify-content-center
+                 bg-white border text-primary align-items-center">
+                    <i class="fab fa-twitter"></i>
+                </div>
+            </a>
+        
+    </div>
+ -->
+    <!-- /social media right -->
+
+    <!-- FOOTER -->
+    <footer class="ega-footer pb-0 pt-4 position-relative">
+    <div class="main-containerrrr container px-lg-5 pb-4">
+
+        <div class="row pb-3">
+                                <div class="col-12 col-sm-6 col-md-4 no-padding-sm text-center text-lg-left footer-content mb-4 mb-md-0">
+                        <h6 class="footer-heading d-inline-block pb-2 mb-4 border-bottom-secondary"> Contact Us </h6>
+                        <div class="my-1"> The United Republic of Tanzania </div>
+                        <div class="my-1"> National Bureau of Statistics </div>
+                                                    <div class="mt-1 mb-1 py-1">P.O. Box 2683,<br />
+64 Lusinde Road,<br />
+41104 Tambukareli, DODOMA.</div>
+                                                                            <div class="py-1 border-footer-contacts" title="Email">
+                                Email:
+                                <a href="mailto:sg@nbs.go.tz"> sg@nbs.go.tz </a>
+                            </div>
+                                                                                                    <div class="py-1 border-footer-contacts" title="Phone">
+                                Phone:
+                                <a href="tel:+255 26 2963822"> +255 26 2963822 </a>
+                            </div>
+                                                                            <div class="py-1 border-footer-contacts" title="Fax">
+                                Mobile:
+                                <a href="fax:+255 26 2963828"> +255797677677/+255739677678 </a>
+                            </div>
+                                                                            <div class="py-1 border-footer-contacts" title="Fax">
+                                Fax:
+                                <a href="fax:+255 26 2963828"> +255 26 2963828 </a>
+                            </div>
+                                            </div>
+                            
+                                    <div class="col-12 col-sm-6 col-md-4 no-padding-sm text-center text-lg-left footer-content mb-4 mb-md-0">
+                        <h6 class="footer-heading d-inline-block pb-2 mb-4 border-bottom-secondary">Quick Links</h6>
+                                                    <div class="pr-1 py-2"><a  target="_blank" rel="noopener noreferrer"  href="https://mail.nbs.go.tz/"> Staff Mail </a></div>
+                                                    <div class="pr-1 py-2"><a  target="_blank" rel="noopener noreferrer"  href="https://play.google.com/store/apps/details?id=tz.go.nbs.tphc22"> Census 2022 App </a></div>
+                                                    <div class="pr-1 py-2"><a  target="_blank" rel="noopener noreferrer"  href="https://www.nbs.go.tz/pages/helpdesk"> Help desk </a></div>
+                                                    <div class="pr-1 py-2"><a  target="_blank" rel="noopener noreferrer"  href="https://ess.utumishi.go.tz/sessions/signin"> PEPMIS (ESS) </a></div>
+                                                    <div class="pr-1 py-2"><a  target="_blank" rel="noopener noreferrer"  href="https://salaryslip.mof.go.tz"> Salary Slip </a></div>
+                                                    <div class="pr-1 py-2"><a  target="_blank" rel="noopener noreferrer"  href="https://safari.gov.go.tz/"> Travel Permit System </a></div>
+                                                    <div class="pr-1 py-2"><a  target="_blank" rel="noopener noreferrer"  href="https://memberportal.psssf.go.tz/login"> PSSSF Portal </a></div>
+                                                    <div class="pr-1 py-2"><a  target="_blank" rel="noopener noreferrer"  href="https://lormis.tpf.go.tz/"> Police Loss Report Form </a></div>
+                                                    <div class="pr-1 py-2"><a  href="https://www.nbs.go.tz/offices"> Regional Statistics Offices </a></div>
+                                                    <div class="pr-1 py-2"><a  target="_blank" rel="noopener noreferrer"  href="https://emrejesho.gov.go.tz/institution-view/6557080462768715449"> e - Mrejesho </a></div>
+                                            </div>
+                            
+                                    <div class="col-12 col-sm-6 col-md-4 no-padding-sm text-center text-lg-left footer-content">
+                        <h6 class="footer-heading d-inline-block pb-2 mb-4 border-bottom-secondary">Related Links</h6>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="https://www.mof.go.tz"> Ministry of Finance </a></div>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="http://www.ocgs.go.tz/"> Office of the Chief Government Statistician </a></div>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="https://www.tanzania.go.tz/"> Government Portal </a></div>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="https://eastc.ac.tz/"> Eastern Africa Statistical Training Centre </a></div>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="https://unstats.un.org/home/nso_sites/"> National Statistical Offices Websites </a></div>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="https://www.parliament.go.tz/"> Parliament of Tanzania </a></div>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="https://www.eac.int/"> East African Community (EAC) </a></div>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="https://www.esrf.or.tz/"> Economic and Social Research Foundation (ESRF) </a></div>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="https://www.bot.go.tz"> Bank of Tanzania </a></div>
+                                                    <div class="pr-1 py-2"><a target="_blank" rel="noopener noreferrer" href="https://www.rita.go.tz/"> RITA </a></div>
+                                            </div>
+                            
+            </div>
+
+
+                    <div class="col-12 footer-content p-0 container border-top-faded">
+                <div class=" footer-media text-center pt-2">
+                                                                                                                                                                                                                                                                                                                                                <a href="https://www.instagram.com/nbs.tanzania/" target="_blank" rel="noopener noreferrer"><i class="fab icon fa-instagram  px-2" aria-hidden="true"></i></a>
+                                                                                                <a href="https://www.facebook.com/OfisiyaTaifayaTakwimu" target="_blank" rel="noopener noreferrer"><i class="fab icon fa-facebook-f px-2" aria-hidden="true"></i></a>
+                                                                                                                                                                                                                                                                                                                                                                                                                        <a href="https://www.youtube.com/channel/UCs15bGGyez5mWJyhKnKRlNA" target="_blank" rel="noopener noreferrer"><i class="fab icon fa-youtube  px-2" aria-hidden="true"></i></a>
+                                                                                                                                                                                                                                                                                                                                                <a href="https://twitter.com/NBSTanzania" target="_blank" rel="noopener noreferrer"><i class="fab icon fa-twitter  px-2" aria-hidden="true"></i></a>
+                                                                                                                                                                                                                                                                                                            </div>
+            </div>
+            </div>
+
+    <div class="site-info bg-primary-dark position-relative">
+        <div class="col-md-12 pl-0 list no-padding-sm text-center  footer-links footer-nav px-3 py-2">
+            <ul class="list-inline mb-0">
+                <li class='list-inline-item'><a href='#'>Privacy Policy</a></li><li class='list-inline-item'><a href='https://www.nbs.go.tz/pages/copyright-statement'>Copyright Statement</a></li>
+            </ul>
+        </div>
+        <div class="copyright text-white-50 px-3 pb-2 footer-nav">
+            <div class="text-center my-1">
+                The website is Designed, Developed And Maintained by
+                <a href="https://www.ega.go.tz" class="" rel="noopener noreferrer" target="_blank">e-Government Authority</a>
+                Content Maintained by National Bureau of Statistics
+            </div>
+
+            <div class="text-white-50 text-center">
+                © 2026 NBS, All Rights Reserved.
+            </div>
+        </div>
+    </div>
+
+    <!--census here-->
+    
+    <!--end census here-->
+
+</footer>
+
+    <!-- /FOOTER -->
+
+    <!-- /FOOTER -->
+
+  </div>
+  <input type="hidden" id="base_url" value="https://www.nbs.go.tz">
+
+  <script src="https://www.nbs.go.tz/site/js/jquery.min.js"></script>
+  <script src="https://www.nbs.go.tz/site/js/bootstrap.bundle.min.js"></script>
+  <script src="https://www.nbs.go.tz/site/js/slick.min.js"></script>
+  <script src="https://www.nbs.go.tz/site/js/owl.carousel.min.js"></script>
+  <script src="https://www.nbs.go.tz/site/js/datatables.min.js"></script>
+  <script src="https://www.nbs.go.tz/site/js/magnific-popup.min.js"></script>
+  <script src="https://www.nbs.go.tz/site/js/custom.min.js"></script>
+  <script src="https://www.nbs.go.tz/site/js/dropdown.min.js"></script>
+  <script src="https://www.nbs.go.tz/site/js/particles.min.js"></script>
+  <script src="https://www.nbs.go.tz/site/js/particles-prop.min.js"></script>
+  <script src="https://www.ega.go.tz/assets/js/announcement.min.js"></script>
+  <script src="https://tanzaniagoaltrack.nbs.go.tz/nbsai/js/tanzstat-widget.js?v=1"></script>
+
+  <script>
+        // Settings Panel Functionality
+      document.addEventListener('DOMContentLoaded', function() {
+      const settingsToggle = document.getElementById('settingsToggle');
+      const settingsPanel = document.getElementById('settingsPanel');
+      const closeSettings = document.getElementById('closeSettings');
+      const resetSettings = document.getElementById('resetSettings');
+      const fontSizeButtons = document.querySelectorAll('.font-size-btn');
+      const langButtons = document.querySelectorAll('.lang-btn');
+      
+      // Toggle settings panel
+      settingsToggle.addEventListener('click', function() {
+        settingsPanel.classList.toggle('open');
+      });
+      
+      // Close settings panel
+      closeSettings.addEventListener('click', function() {
+        settingsPanel.classList.remove('open');
+      });
+      
+      // Font size controls
+      fontSizeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          fontSizeButtons.forEach(btn => btn.classList.remove('active'));
+          this.classList.add('active');
+          
+          const size = this.getAttribute('data-size');
+          document.documentElement.classList.remove('large-text', 'larger-text');
+          
+          if (size === 'large') {
+            document.documentElement.classList.add('large-text');
+          } else if (size === 'larger') {
+            document.documentElement.classList.add('larger-text');
+          }
+          
+          // Save preference to localStorage
+          localStorage.setItem('fontSize', size);
+        });
+      });
+      
+      // Reset all settings
+      resetSettings.addEventListener('click', function() {
+        document.documentElement.classList.remove('large-text', 'larger-text');
+        fontSizeButtons.forEach(btn => btn.classList.remove('active'));
+        langButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // Activate default buttons
+        document.querySelector('.font-size-btn[data-size="normal"]').classList.add('active');
+        
+        // Clear localStorage
+        localStorage.removeItem('fontSize');
+        localStorage.removeItem('language');
+      });
+      
+      // Load saved preferences
+      const savedFontSize = localStorage.getItem('fontSize');
+      const savedLanguage = localStorage.getItem('language');
+      
+      if (savedFontSize) {
+        document.querySelector(`.font-size-btn[data-size="${savedFontSize}"]`).click();
+      }
+      
+      if (savedLanguage) {
+        document.querySelector(`.lang-btn[data-lang="${savedLanguage}"]`).classList.add('active');
+      }
+    });
+  </script>
+
+
+  
+</body>
+
+</html>

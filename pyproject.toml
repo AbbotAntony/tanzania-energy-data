@@ -1,0 +1,10 @@
+[project]
+name = "tz-energy-scraper"
+version = "0.1.0"
+description = "Reproducible scraper for Tanzanian natural gas, petroleum and electricity statistics"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"
