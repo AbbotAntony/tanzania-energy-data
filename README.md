@@ -3,8 +3,7 @@
 A reproducible pipeline that collects public Tanzanian energy documents and turns
 their tables into tidy CSV and Stata `.dta` files. Every value keeps full provenance.
 
-Built for the study *Natural Gas Utilisation and Heavy-Fuel-Oil Import
-Displacement in Tanzania: Evidence from the GASCO Transmission System (2015–2025)*.
+A reproducible pipeline that collects Tanzanian data on natural gas utilisation, heavy-fuel-oil (HFO) imports, fuel prices and power generation, plus energy news articles. The data supports energy-economics research and machine-learning work, including NLP analysis of how Tanzania's media covers natural gas and energy.
 
 ## Setup (Windows, PowerShell)
 
