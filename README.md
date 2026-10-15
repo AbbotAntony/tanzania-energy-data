@@ -1,9 +1,6 @@
 # Tanzania Natural Gas & Petroleum Data Scraper
 
-A reproducible pipeline that collects public Tanzanian energy documents and turns
-their tables into tidy CSV and Stata `.dta` files. Every value keeps full provenance.
-
-A reproducible pipeline that collects Tanzanian data on natural gas utilisation, heavy-fuel-oil (HFO) imports, fuel prices and power generation, plus energy news articles. The data supports energy-economics research and machine-learning work, including NLP analysis of how Tanzania's media covers natural gas and energy.
+A reproducible pipeline that collects Tanzanian data on natural gas utilisation, heavy-fuel-oil (HFO) imports, fuel prices and power generation, plus energy news articles. The data supports energy-economics research and machine-learning work, including NLP analysis of how Tanzania's media covers natural gas and energy. Tables from public documents are turned into tidy CSV and Stata `.dta` files, and every value keeps full provenance back to its source document.
 
 ## Setup (Windows, PowerShell)
 
