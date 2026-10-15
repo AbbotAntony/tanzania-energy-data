@@ -47,13 +47,30 @@ def boxes_to_lines(boxes: list[tuple[float, float, str]]) -> list[str]:
     return lines
 
 
-def _ocr_page(pdf, index: int) -> str:
+def _ocr_page(pdf, index: int, rotation: int = 0) -> str:
     import numpy as np
 
-    image = np.array(pdf[index].render(scale=RENDER_SCALE).to_pil().convert("RGB"))
+    image = np.array(pdf[index].render(scale=RENDER_SCALE, rotation=rotation)
+                     .to_pil().convert("RGB"))
     result, _ = _engine()(image)
     boxes = [((b[0][1] + b[2][1]) / 2, b[0][0], text) for b, text, _conf in (result or [])]
     return "\n".join(boxes_to_lines(boxes))
+
+
+def ocr_page_rotated(path: Path, page_no: int, rotation: int,
+                     cache_dir: Path = OCR_CACHE_DIR) -> PageText:
+    """OCR one page turned by ``rotation`` degrees (landscape tables printed sideways)."""
+    import pypdfium2 as pdfium
+
+    digest = hashlib.sha256(path.read_bytes()).hexdigest()
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    cache_file = cache_dir / f"{digest}_p{page_no}_r{rotation}.json"
+    if cache_file.exists():
+        text = json.loads(cache_file.read_text(encoding="utf-8"))
+    else:
+        text = _ocr_page(pdfium.PdfDocument(str(path)), page_no - 1, rotation)
+        cache_file.write_text(json.dumps(text, ensure_ascii=False), encoding="utf-8")
+    return PageText(page_no, text, False)
 
 
 _TOC_LINE = re.compile(r"\.{4,}|…|\s\d{1,3}\s*$")

@@ -99,7 +99,7 @@ Verified on 2026-10-15. Robots.txt was checked for every site.
 |---|---|---|
 | `ewura_gas` | gas supply by processing plant, production by field, consumption by customer category (total and by seller), pipeline and processing-plant capacity utilisation, customer counts | supply FY2018/19–FY2024/25; consumption by category FY2020/21–FY2024/25; pipeline utilisation FY2019/20–FY2024/25 |
 | `ewura_gas_narrative` | sentences mentioning decreases, JNHPP, hydro or PPAs (keyword match; noisy) | FY2019/20–FY2024/25 |
-| `ewura_petroleum` | total local/transit imports; imports by product (incl. HFO); consumption by product (litres) | totals 2015–FY2022/23; by product 2019–FY2024/25 |
+| `ewura_petroleum` | total local/transit imports; imports by product (incl. HFO); consumption by product (litres). `petroleum_imports_estimated`: HFO local imports 2016–2018 estimated from stated % changes (see below) | totals 2015–FY2022/23; imports by product 2012–2015 (appendix annual totals) and 2019–FY2024/25; consumption 2014–FY2023/24 |
 | `ewura_petroleum_narrative` | sentences mentioning HFO, fuel oil or power generation | 2014–FY2024/25 |
 | `ewura_cap_prices` | monthly retail and wholesale cap prices (TZS/litre) at Dar es Salaam, Tanga and Mtwara; 2022 subsidy and floor prices labelled in `x_price_basis` | 2017, 2021–Oct 2026 (with gaps) |
 
@@ -223,10 +223,29 @@ like a source error; such cases stay flagged in `qa_discrepancies.csv`.
   FY2020/21.** The FY2019/20–FY2021/22 reports show it only as charts. So
   the power-sector share of gas from EWURA starts in FY2020/21.
 * **No EWURA natural gas report before FY2019/20 is published** on the site.
-* **HFO imports by product: 2014–2018 are missing.** Those petroleum reports
-  show product splits only in charts. The 2019 report's Appendix 9 uses a font
-  that cannot be decoded. The 2016 report does state in text that HFO's share of
-  generation fell from 21 % (2015) to 6 % (2016). See `ewura_petroleum_narrative`.
+* **HFO imports by product, 2012–2019:**
+  * 2012–2015 are exact: annual "Total" rows of the monthly appendix tables in the
+    2013/14 report (sideways pages, re-read with pypdfium2) and the 2015 report
+    (a scan, OCR'd after rotating the page; `qa_flag` `ocr_extracted`). Product
+    columns are checked against the printed row or grand total. The 2015 HFO total
+    includes 43.8 M litres of transit HFO "localized" for the local market.
+  * 2016–2018 are **estimates** (`petroleum_imports_estimated`). The 2016–2018
+    reports show product splits only in charts, and the 2019 report's Appendix 9
+    uses a font that cannot be decoded. The estimates chain the stated HFO
+    changes (2016 −75 %, 2017 −30 % for local imports, both from 2015's exact
+    value; 2018 backed out of 2019's −4 %) and are checked against the stated
+    HFO shares of local imports (2 % in 2016, 1 % in 2017; `x_share_check`).
+    The 2019 sentence does not say "local" explicitly, but sits in the local
+    imports paragraph.
+  * The exact HFO **consumption** series (sales, 2014–2019) needs no estimation and
+    is the safer series for showing the post-2016 decline.
+  * Consumption exceeds local imports in every year 2016–2022, including the
+    exact years 2019–2022 (≈ 32 M litres over four years), so imports and consumption do not
+    reconcile as a simple stock balance. The 2017 report also gives a 53 % rise
+    in *transit* HFO, although the 2016 report says there were no transit HFO
+    imports in 2016.
+  * The 2016 report states that HFO's share of generation fell from 21 % (2015)
+    to 6 % (2016). See `ewura_petroleum_narrative`.
 * **Cap prices:**
   * EWURA's site has no notices for 2018–2020 or Jan–Jun 2017.
   * Six notices are present but could not be parsed (logged): Aug and Sep 2017,

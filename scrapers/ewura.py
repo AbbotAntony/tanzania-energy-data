@@ -88,6 +88,9 @@ class EwuraScraper(Scraper):
                     datasets.setdefault(name, []).extend(records)
             except Exception as exc:  # one bad PDF must not stop the run
                 self._fail(doc.ref.url, exc)
+        if "ewura_petroleum" in datasets:  # needs every edition, so runs after the loop
+            datasets["ewura_petroleum"] += ewura_petroleum.estimate_hfo_imports(
+                datasets["ewura_petroleum"], datasets.get("ewura_petroleum_narrative", []))
         return datasets
 
     def _parse_page(self, html: str, url: str) -> list[DocumentRef]:
