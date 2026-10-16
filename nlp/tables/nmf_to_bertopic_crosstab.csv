@@ -1,0 +1,18 @@
+nmf_topic,"Budget, revenue & public spending",CNG for vehicles,China relations,Clean cooking,Climate & environment,EACOP crude oil pipeline,Economic diplomacy & trade,Extractives & natural resource wealth,"Fertiliser, helium & gas-based industry",Fuel prices & Middle East shocks,Gas fields & production,LNG project & investment deals,"Macroeconomy, debt & FDI",Outliers (no topic),"Ports, SEZs & logistics","Power generation, JNHPP & grid",Public enterprises & Treasury Registrar,Regional oil & gas conferences,Renewables & generation mix,Ruling party & elections,Upstream exploration & licensing
+Budget & public finance,0.406,0.014,0.0,0.0,0.014,0.0,0.0,0.0,0.0,0.0,0.0,0.014,0.188,0.319,0.014,0.014,0.014,0.0,0.0,0.0,0.0
+CNG for vehicles,0.0,0.759,0.0,0.013,0.0,0.0,0.025,0.0,0.025,0.0,0.025,0.0,0.013,0.139,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Clean cooking & climate,0.0,0.0,0.0,0.341,0.132,0.0,0.0,0.0,0.0,0.0,0.0,0.011,0.0,0.286,0.0,0.022,0.0,0.044,0.165,0.0,0.0
+"Diplomacy, trade & investment ties",0.0,0.0,0.181,0.0,0.019,0.0,0.648,0.0,0.029,0.01,0.0,0.0,0.029,0.057,0.0,0.0,0.0,0.01,0.019,0.0,0.0
+EACOP crude oil pipeline,0.014,0.014,0.0,0.0,0.0,0.685,0.014,0.0,0.0,0.0,0.014,0.0,0.014,0.137,0.0,0.014,0.0,0.068,0.014,0.0,0.014
+Electricity grid & generation,0.0,0.0,0.0,0.0,0.0,0.0,0.015,0.008,0.0,0.0,0.0,0.015,0.008,0.122,0.0,0.733,0.0,0.0,0.099,0.0,0.0
+Fuel prices & Middle East shocks,0.0,0.0,0.0,0.0,0.0,0.0,0.022,0.0,0.0,0.689,0.0,0.0,0.022,0.2,0.022,0.0,0.0,0.044,0.0,0.0,0.0
+Gas fields & production,0.0,0.0,0.0,0.0,0.0,0.0,0.021,0.0,0.062,0.0,0.438,0.021,0.0,0.104,0.021,0.0,0.0,0.0,0.0,0.0,0.333
+Industrialisation & regional growth,0.0,0.0,0.0,0.0,0.017,0.0,0.458,0.068,0.051,0.0,0.0,0.0,0.169,0.186,0.0,0.017,0.0,0.017,0.017,0.0,0.0
+JNHPP dam & Rufiji water,0.016,0.0,0.0,0.0,0.066,0.0,0.033,0.016,0.0,0.016,0.0,0.0,0.0,0.18,0.016,0.623,0.0,0.0,0.0,0.033,0.0
+LNG project,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.081,0.081,0.108,0.459,0.081,0.135,0.054,0.0,0.0,0.0,0.0,0.0,0.0
+Local communities & CSR,0.01,0.01,0.0,0.01,0.0,0.029,0.02,0.059,0.029,0.0,0.078,0.02,0.02,0.412,0.147,0.059,0.01,0.0,0.0,0.078,0.01
+Macroeconomic figures,0.014,0.0,0.014,0.0,0.0,0.0,0.11,0.027,0.041,0.014,0.0,0.0,0.466,0.192,0.11,0.0,0.0,0.0,0.0,0.014,0.0
+Public enterprises & Treasury Registrar,0.054,0.0,0.0,0.0,0.018,0.0,0.0,0.036,0.018,0.0,0.054,0.018,0.018,0.393,0.0,0.0,0.357,0.018,0.0,0.018,0.0
+Ruling party & elections,0.049,0.0,0.0,0.0,0.012,0.0,0.037,0.0,0.0,0.0,0.0,0.0,0.012,0.122,0.012,0.0,0.0,0.012,0.0,0.744,0.0
+Upstream exploration & licensing,0.0,0.0,0.0,0.0,0.0,0.02,0.0,0.0,0.196,0.0,0.02,0.0,0.0,0.137,0.0,0.0,0.0,0.078,0.0,0.0,0.549
+Zanzibar-Union affairs,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.9,0.1,0.0,0.0,0.0,0.0,0.0,0.0

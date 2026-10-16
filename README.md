@@ -38,6 +38,7 @@ Later runs use the HTTP cache and the PDF-text cache and finish in seconds.
 | `data/raw/<source>/<YYYY-MM-DD>/` | unchanged downloads plus `manifest.jsonl` (url, title, sha256, retrieval time) |
 | `data/processed/` | output datasets and QA reports |
 | `logs/` | one log per source per day; failed URLs are logged at WARNING |
+| `nlp/` | NLP analysis of the news corpus, with its own environment (see [NLP analysis](#nlp-analysis-how-daily-news-covers-natural-gas)) |
 
 ## Output format
 
@@ -267,3 +268,128 @@ like a source error; such cases stay flagged in `qa_discrepancies.csv`.
   page carries `text_glyph_decoded`.
 * **Listing dates are unreliable** (e.g. the 2021 petroleum report is dated
   2018-12-12). Periods are always taken from the document contents.
+
+## NLP analysis: how Daily News covers natural gas
+
+*Work in progress. Tasks 1–2 (corpus preparation and topic models) are done.
+Sentiment validation, the framing classifier and the link to the energy series
+come next.*
+
+The analysis asks three questions:
+
+1. Which themes dominate energy news, and how do they change over 2022–2026?
+2. Did coverage move from natural gas toward hydropower (JNHPP) around the 2024 fall
+   in gas consumption? The question is whether coverage *tracks or anticipates* the
+   gas-to-hydro shift, not whether it explains the drop.
+3. Is coverage of natural gas becoming more positive or more negative?
+
+All code is in `nlp/` and runs in its own environment, so the scraper environment
+stays light. Committed outputs contain ids, URLs, counts and model terms only.
+Article text stays in `data/nlp/`, which is gitignored.
+
+```powershell
+python -m venv nlp\.venv
+nlp\.venv\Scripts\python.exe -m pip install -r nlp\requirements.txt
+nlp\.venv\Scripts\python.exe -m pip install -r nlp\requirements-embed.txt   # torch (CPU) + BERTopic, ~217 MB
+nlp\.venv\Scripts\python.exe nlp\scripts\01_prep.py             # clean corpus, coverage tables
+nlp\.venv\Scripts\python.exe nlp\scripts\02_topics_nmf.py       # NMF baseline (~9 min k-sweep)
+nlp\.venv\Scripts\python.exe nlp\scripts\02b_topics_bertopic.py # BERTopic + comparison
+nlp\.venv\Scripts\python.exe nlp\scripts\02c_gas_mentions.py    # gas discussed vs listed
+cd nlp; .venv\Scripts\python.exe -m pytest                        # tests
+```
+
+Every random step uses a fixed seed (42), and the embedding model is pinned to a
+specific Hub commit.
+
+### Methods
+
+* **Corpus.** The corpus is the Daily News articles from the scraper (1,225). Text is
+  re-extracted from the raw HTML so that inserted "ALSO READ: <other headline>"
+  links and photo captions can be dropped.
+  * Topic tags are re-matched on the clean text. This removes 36 articles whose
+    only gas or energy keyword was in a link to another story.
+  * 15 near-duplicate reposts are removed (word 5-gram Jaccard ≥ 0.8; the earliest
+    copy is kept).
+  * That leaves 1,174 articles. The **main analysis window starts in 2022-Q3**
+    (1,172 articles), because the API returns almost nothing earlier. Every quarter
+    from 2022-Q3 has at least 35 articles. Months with fewer than 10 articles, and
+    the partial current month, are flagged in `nlp/tables/prep_articles_per_month.csv`.
+* **NMF baseline.** NMF runs on TF-IDF (unigrams and bigrams).
+  * Officials' names are stop words, defined as words that follow a title (Mr,
+    Minister, …) in at least 5 articles and are capitalised in at least 80% of
+    their uses. Without this, the model builds one topic per minister, and those
+    topics follow cabinet reshuffles rather than themes.
+  * **k = 17 is fixed, not chosen by the k-sweep.** Over k = 10–25, coherence is
+    flat, and the stability score varies as much between two runs (SD ≈ 0.02) as
+    it does across k. The sweep (`nmf_k_selection.csv`) is therefore a diagnostic,
+    and key results are repeated at k = 14, 15, 17, 19 and 21
+    (`nmf_k_sensitivity_summary.csv`).
+  * Topic shares by quarter come with article-bootstrap 95% intervals. They are
+    repeated without the 30% of articles that mention a keyword only once, as a
+    robustness check.
+* **BERTopic.** BERTopic uses all-MiniLM-L6-v2 on CPU, with UMAP/HDBSCAN
+  (`min_cluster_size = 15`).
+  * The model reads at most about 200 words, so articles are embedded in 150-word
+    chunks, and the chunk vectors are averaged.
+  * The comparison with NMF is in `topic_model_comparison.csv`:
+
+  | | NMF (k=17) | BERTopic |
+  |---|---|---|
+  | Topics | 17 | 20, plus 20% outliers |
+  | Coherence (NPMI, same reference vocabulary) | 0.40 | 0.32 |
+  | Topic diversity | 0.97 | 0.91 |
+  | Stability (AMI of assignments across 5 seeds) | 0.68 | 0.80 |
+  | Agreement between the models (AMI) | 0.60 | |
+
+* **How gas is mentioned.** A rule-based classifier (`energy_nlp/mentions.py`) labels
+  each gas mention in one of three ways:
+  * *discussed*: a sentence says something about gas itself
+  * *in an energy-mix list*: "hydropower, natural gas and solar"
+  * *in a resource list*: "minerals, natural gas and wildlife"
+
+  **It is indicative until validated** against hand labels coded with
+  `nlp/labels/CODEBOOK.md`.
+
+### Findings so far (descriptive)
+
+* **Gas is mentioned more but discussed less.**
+  * The share of articles that mention natural gas rose from **52% (2022-Q3 to
+    2024-Q4) to 62% (2025-Q1 to 2026-Q3)**.
+  * Among gas-mentioning articles, the share that actually discuss gas fell from
+    **90% to 81%** (−9.4 points, 95% CI −14.6 to −4.0). This uses the rule-based
+    classifier, so it is indicative until validated.
+  * About two-thirds of the rise is articles where gas appears only in lists:
+    energy-mix lists +4.2 points [1.7, 6.7], resource-wealth lists +2.7 [0.7, 4.8].
+    The rise in articles that discuss gas, +3.4 [−2.5, 9.2], cannot be told apart
+    from zero.
+* **The rise is not gas-sector news.** In both models the gas-sector topics stay flat
+  or fall: LNG, CNG and gas fields. The increase comes from general economic and
+  development coverage.
+  * In NMF, the industrialisation and regional growth topic adds +5.1 to +7.6
+    points at every k tested.
+  * In BERTopic, it comes from outliers, economic diplomacy, Middle East fuel-price
+    shocks and macroeconomic coverage. Most of NMF's industrialisation articles fall
+    under BERTopic's diplomacy, outlier and macro clusters.
+  * The two models disagree on clean cooking (NMF +3.3 points, BERTopic −0.9),
+    because NMF's topic is broader.
+* **Hydropower.** The JNHPP dam topic is largest in 2022–23, while the dam was being
+  built. It falls by about 5 points of coverage between the two periods. The first
+  turbine (2024-Q1) shows up as a one-quarter jump in articles tagged JNHPP. A formal
+  comparison with the gas consumption series is Task 5.
+
+### Limitations
+
+* **Time span.** The API holds nothing before mid-2021 and very little before
+  2022-Q3, so the 2015–2021 period of the energy data has no news counterpart.
+* **One newspaper, government-owned.** Daily News is state-owned (TSN), so its
+  coverage reflects official framing and cannot stand for Tanzanian media in
+  general. *The Citizen* is available as headlines only, and Swahili outlets are
+  not covered.
+* **Keyword-defined corpus.** Articles enter the corpus by keyword, including the
+  JNHPP keywords. Trends are shares *within* energy-keyword coverage, not shares of
+  all news.
+* **Model choices.** The number of NMF topics cannot be identified from the data
+  (k is fixed and sensitivity-tested). BERTopic leaves 20% of articles as outliers.
+  Topic labels are the author's.
+* **Descriptive only.** None of these results identify causal effects of coverage
+  on gas use.

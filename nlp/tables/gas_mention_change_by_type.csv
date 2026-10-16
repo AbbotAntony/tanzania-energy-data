@@ -1,0 +1,4 @@
+gas_mention,label,2022Q3-2024Q4,2025Q1-2026Q3,contribution,lo,hi
+energy_mix_list,only in energy-mix lists,0.0325,0.0744,0.0419,0.0168,0.0673
+substantive,gas discussed,0.4646,0.4984,0.0338,-0.025,0.0918
+resource_list,only in resource lists,0.0191,0.0459,0.0268,0.0065,0.0483

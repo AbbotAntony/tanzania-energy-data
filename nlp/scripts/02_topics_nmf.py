@@ -13,7 +13,6 @@ from pathlib import Path
 
 sys.path[:0] = [str(Path(__file__).resolve().parents[2]), str(Path(__file__).resolve().parents[1])]
 
-import matplotlib.dates as mdates  # noqa: E402
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
@@ -22,9 +21,18 @@ from sklearn.exceptions import ConvergenceWarning  # noqa: E402
 
 from energy_nlp import DATA_DIR, FIGURES_DIR, SEED, TABLES_DIR  # noqa: E402
 from energy_nlp import prep, topics as tp  # noqa: E402
+from energy_nlp.plotting import (BLUE, BLUE_LIGHT, GRAY, GRID, INK, INK2, ORANGE,  # noqa: E402
+                                 SURFACE, style, year_ticks)
 from parsers.news import TOPICS  # noqa: E402
 
 K_RANGE = range(5, 26)
+# k is fixed, not chosen by the sweep. Over k = 10-25 coherence is flat and the
+# stability score moves as much between two runs (SD ~0.02) as it differs across k,
+# so the sweep cannot pick an optimum. 17 lies on that plateau and separates the
+# energy sub-themes the research questions need (LNG, CNG, exploration, gas fields).
+# The sweep is reported as a diagnostic and key results are re-run at K_SENSITIVITY.
+K_FINAL = 17
+K_SENSITIVITY = (14, 15, 17, 19, 21)
 N_RESTARTS = 10
 N_TOP = 10
 N_BOOT = 1000
@@ -54,8 +62,6 @@ LABELS = {
     16: ("Macroeconomic figures", "gdp"),
 }
 
-INK, INK2, GRID, SURFACE = "#0b0b0b", "#52514e", "#e4e3df", "#ffffff"
-BLUE, BLUE_LIGHT, ORANGE, GRAY = "#2a78d6", "#b7d3f6", "#eb6834", "#8a8984"
 
 
 def sweep(X, k_range=K_RANGE) -> pd.DataFrame:
@@ -82,24 +88,11 @@ def plot_k_selection(sel: pd.DataFrame, k: int, path: Path) -> None:
         ax.scatter(sel["k"], sel[col], s=14, color=BLUE, zorder=3)
         ax.scatter([k], sel.loc[sel["k"] == k, col], s=60, facecolors="none", edgecolors=INK, zorder=4)
         ax.set_title(title, loc="left", fontsize=9)
-        _style(ax)
-    axes[1].set_xlabel("number of topics k (circled: chosen)")
+        style(ax)
+    axes[1].set_xlabel("number of topics k (circled: k used, fixed at 17; diagnostic only)")
     fig.tight_layout()
     fig.savefig(path, dpi=200, facecolor=SURFACE)
     plt.close(fig)
-
-
-def _years(ax) -> None:
-    ax.xaxis.set_major_locator(mdates.YearLocator())
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
-
-
-def _style(ax) -> None:
-    ax.grid(axis="y", color=GRID, linewidth=0.6)
-    ax.set_axisbelow(True)
-    ax.spines[["top", "right"]].set_visible(False)
-    ax.spines[["left", "bottom"]].set_color(GRID)
-    ax.tick_params(colors=INK2, labelsize=7)
 
 
 def plot_shares(shares: pd.DataFrame, robust: pd.DataFrame, order: list[int], path: Path) -> None:
@@ -119,8 +112,8 @@ def plot_shares(shares: pd.DataFrame, robust: pd.DataFrame, order: list[int], pa
         ax.set_title(LABELS[t][0], loc="left", fontsize=8)
         ax.set_ylim(0, ymax)
         ax.yaxis.set_major_formatter(lambda v, _: f"{v:.0%}")
-        _style(ax)
-        _years(ax)
+        style(ax)
+        year_ticks(ax)
     for ax in list(axes.flat)[n:]:
         ax.axis("off")
     handles = [plt.Line2D([], [], color=BLUE, linewidth=2),
@@ -147,8 +140,8 @@ def plot_gas(focus_q: pd.DataFrame, contrib: pd.DataFrame, path: Path) -> None:
     ax1.yaxis.set_major_formatter(lambda v, _: f"{v:.0%}")
     ax1.set_title("Share of articles mentioning natural gas", loc="left", fontsize=9)
     ax1.legend(frameon=False, fontsize=8, loc="upper left")
-    _style(ax1)
-    _years(ax1)
+    style(ax1)
+    year_ticks(ax1)
 
     c = contrib.iloc[::-1]
     y = np.arange(len(c))
@@ -164,7 +157,7 @@ def plot_gas(focus_q: pd.DataFrame, contrib: pd.DataFrame, path: Path) -> None:
     ax2.set_xlabel("change in share of all articles that mention gas, percentage points", fontsize=7)
     ax2.set_title(f"Where the rise came from, by dominant topic\n{ERA_A} vs {ERA_B}",
                   loc="left", fontsize=9)
-    _style(ax2)
+    style(ax2)
     ax2.grid(axis="x", color=GRID, linewidth=0.6)
     ax2.grid(axis="y", visible=False)
     fig.tight_layout()
@@ -191,11 +184,8 @@ def main() -> None:
     sel_path = TABLES_DIR / "nmf_k_selection.csv"
     sel = pd.read_csv(sel_path) if args.skip_sweep else sweep(X)
     sel.to_csv(sel_path, index=False)
-    k = tp.choose_k(sel)
+    k = K_FINAL
     plot_k_selection(sel, k, FIGURES_DIR / "nmf_k_selection.png")
-    print(f"chosen k = {k}")
-    if k != len(LABELS):
-        sys.exit(f"LABELS is written for k={len(LABELS)}; relabel topics for k={k} first")
 
     W, H = tp.fit_nmf(X, k, SEED)
     P = tp.doc_proportions(W)
@@ -267,27 +257,42 @@ def main() -> None:
         gas_passing_share=("passing", "mean")).round(4)
     era_tbl.to_csv(TABLES_DIR / "gas_share_by_era.csv")
 
-    contrib = tp.share_change_by_group(gas, pd.Series(dominant), eras, ERA_A, ERA_B)
+    contrib = tp.share_change_with_intervals(gas, pd.Series(dominant), eras, ERA_A, ERA_B, N_BOOT, SEED)
     contrib.insert(1, "label", contrib["group"].map(lambda t: LABELS[t][0]))
-    # Bootstrap the contributions: resample articles within each era.
-    rng = np.random.default_rng(SEED)
-    ia, ib = np.flatnonzero(eras == ERA_A), np.flatnonzero(eras == ERA_B)
-    g_arr = gas.to_numpy()
-    boots = np.empty((N_BOOT, k))
-    for i in range(N_BOOT):
-        a = rng.choice(ia, len(ia)); b = rng.choice(ib, len(ib))
-        boots[i] = (np.bincount(dominant[b][g_arr[b]], minlength=k) / len(b)
-                    - np.bincount(dominant[a][g_arr[a]], minlength=k) / len(a))
-    lo, hi = np.quantile(boots, [0.025, 0.975], axis=0)
-    contrib["lo"] = contrib["group"].map(dict(enumerate(lo)))
-    contrib["hi"] = contrib["group"].map(dict(enumerate(hi)))
     contrib = contrib.rename(columns={"group": "topic"}).round(4)
     contrib.to_csv(TABLES_DIR / "gas_rise_by_topic.csv", index=False)
+
+    # k-sensitivity: redo the drill-down at other k; name each topic by its closest
+    # k=17 topic (cosine of term weights) so contributions line up across k.
+    Hn = H / np.linalg.norm(H, axis=1, keepdims=True)
+    sens = []
+    for kk in K_SENSITIVITY:
+        Wk, Hk = (W, H) if kk == k else tp.fit_nmf(X, kk, SEED)
+        dom_k = tp.doc_proportions(Wk).argmax(axis=1)
+        ck = tp.share_change_by_group(gas, pd.Series(dom_k), eras, ERA_A, ERA_B).set_index("group")
+        sim = (Hk / np.linalg.norm(Hk, axis=1, keepdims=True)) @ Hn.T
+        for t in range(kk):
+            sens.append((kk, t, LABELS[int(sim[t].argmax())][0], round(float(sim[t].max()), 3),
+                         round(float(ck["contribution"].get(t, 0.0)), 4),
+                         ", ".join(vocab[np.argsort(-Hk[t])[:8]])))
+    sens = pd.DataFrame(sens, columns=["k", "topic", "closest_k17_topic", "cosine",
+                                       "contribution", "top_terms"])
+    sens.sort_values(["k", "contribution"], ascending=[True, False]).to_csv(
+        TABLES_DIR / "nmf_k_sensitivity.csv", index=False)
+    focus = ["Industrialisation & regional growth", "Clean cooking & climate",
+             "Fuel prices & Middle East shocks", "LNG project", "CNG for vehicles",
+             "Gas fields & production"]
+    # Several topics can share a closest k=17 topic; sum them so each row is a theme.
+    sens_summary = (sens[sens["closest_k17_topic"].isin(focus)]
+                    .pivot_table(index="closest_k17_topic", columns="k", values="contribution",
+                                 aggfunc="sum").reindex(focus).round(4))
+    sens_summary.to_csv(TABLES_DIR / "nmf_k_sensitivity_summary.csv")
     plot_gas(focus_q, contrib, FIGURES_DIR / "gas_rise_drivers.png")
 
     print(topic_table[["topic", "label", "mean_share", "n_dominant", "npmi"]].to_string(index=False))
     print("\n", era_tbl.to_string())
     print("\n", contrib.to_string(index=False))
+    print("\nk-sensitivity (contribution to gas rise, share points):\n", sens_summary.to_string())
     print("\n", trend[["label", "change_all", "change_excl_passing", "same_direction"]]
           .sort_values("change_all").to_string(index=False))
 

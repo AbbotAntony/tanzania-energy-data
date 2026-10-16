@@ -45,12 +45,22 @@ NOT_NAMES = {
 }
 
 
-def person_names(texts: Iterable[str], min_docs: int = 5) -> set[str]:
-    """Lower-cased words that follow a title (Mr, Minister, ...) in >= ``min_docs`` texts."""
+def person_names(texts: Iterable[str], min_docs: int = 5, min_capitalised: float = 0.8) -> set[str]:
+    """Lower-cased words that follow a title (Mr, Minister, ...) in >= ``min_docs`` texts
+    and are capitalised in >= ``min_capitalised`` of all their uses (drops "mark", "safari")."""
+    texts = list(texts)
     counts: Counter[str] = Counter()
     for t in texts:
         counts.update({w.lower() for m in TITLED_NAME.findall(t) for w in m.split()})
-    return {w for w, n in counts.items() if n >= min_docs} - NOT_NAMES
+    cand = {w for w, n in counts.items() if n >= min_docs} - NOT_NAMES
+    upper: Counter[str] = Counter()
+    lower: Counter[str] = Counter()
+    for t in texts:
+        for w in re.findall(r"[A-Za-z][A-Za-z\-]*[A-Za-z]", t):
+            lw = w.lower()
+            if lw in cand:
+                (upper if w[0].isupper() else lower)[lw] += 1
+    return {w for w in cand if upper[w] >= min_capitalised * (upper[w] + lower[w])}
 
 
 def make_vectorizer(extra_stop: Iterable[str] = (), min_df: int = 5,
@@ -116,17 +126,6 @@ def stability(Hs: list[np.ndarray]) -> float:
     return float(np.mean([match_similarity(a, b) for a, b in combinations(Hs, 2)]))
 
 
-def choose_k(sel: pd.DataFrame, k_min: int = 10, tol: float = 0.05) -> int:
-    """Most stable k among k >= ``k_min`` whose coherence is within ``tol`` of the best.
-
-    ``sel`` needs columns k, npmi, stability. The floor keeps enough topics to
-    separate the energy sub-themes the research questions need.
-    """
-    cand = sel[sel["k"] >= k_min]
-    cand = cand[cand["npmi"] >= cand["npmi"].max() - tol]
-    return int(cand.sort_values(["stability", "k"], ascending=[False, True]).iloc[0]["k"])
-
-
 def doc_proportions(W: np.ndarray) -> np.ndarray:
     """Rows of W scaled to sum to 1; an all-zero row is spread evenly."""
     s = W.sum(axis=1, keepdims=True)
@@ -171,3 +170,29 @@ def share_change_by_group(flag: pd.Series, group: pd.Series, period: pd.Series,
     out["contribution"] = out[after] - out[before]
     out.index.name = "group"
     return out.sort_values("contribution", ascending=False).reset_index()
+
+
+def share_change_with_intervals(flag: pd.Series, group: pd.Series, period: pd.Series, before: str,
+                                after: str, n_boot: int = 1000, seed: int = 42,
+                                level: float = 0.95) -> pd.DataFrame:
+    """``share_change_by_group`` plus percentile bootstrap intervals (``lo``, ``hi``)
+    for each contribution, resampling articles within each period."""
+    out = share_change_by_group(flag, group, period, before, after)
+    codes, uniques = pd.factorize(group)
+    m = len(uniques)
+    f = np.asarray(flag, dtype=bool)
+    p = np.asarray(period)
+    ia, ib = np.flatnonzero(p == before), np.flatnonzero(p == after)
+    rng = np.random.default_rng(seed)
+    boots = np.empty((n_boot, m))
+    for i in range(n_boot):
+        a = rng.choice(ia, len(ia))
+        b = rng.choice(ib, len(ib))
+        boots[i] = (np.bincount(codes[b][f[b]], minlength=m) / len(b)
+                    - np.bincount(codes[a][f[a]], minlength=m) / len(a))
+    a_ = (1 - level) / 2
+    lo, hi = np.quantile(boots, [a_, 1 - a_], axis=0)
+    pos = {g: j for j, g in enumerate(uniques)}
+    out["lo"] = out["group"].map(lambda g: lo[pos[g]] if g in pos else 0.0)
+    out["hi"] = out["group"].map(lambda g: hi[pos[g]] if g in pos else 0.0)
+    return out

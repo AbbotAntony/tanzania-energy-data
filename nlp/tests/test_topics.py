@@ -40,15 +40,6 @@ def test_match_similarity_ignores_topic_order():
     assert tp.match_similarity(H, rng.random((4, 30))) < 1.0
 
 
-def test_choose_k_most_stable_within_tolerance():
-    sel = pd.DataFrame({"k": [5, 10, 12, 15, 20],
-                        "npmi": [0.30, 0.40, 0.36, 0.42, 0.44],
-                        "stability": [0.99, 0.90, 0.95, 0.92, 0.88]})
-    # k=5 is below the floor; k=12 is too incoherent (0.36 < 0.44 - 0.05).
-    assert tp.choose_k(sel) == 15
-    assert tp.choose_k(sel, tol=0.10) == 12
-
-
 def test_doc_proportions_rows_sum_to_one():
     W = np.array([[1.0, 3.0], [0.0, 0.0]])
     P = tp.doc_proportions(W)
@@ -84,3 +75,23 @@ def test_person_names_rule():
     names = tp.person_names(texts, min_docs=5)
     assert "biteko" in names and "doto" not in names     # doto only twice
     assert tp.person_names(["Mr Julius Nyerere"] * 5) == set()   # protected: dam name
+
+
+def test_person_names_drops_mostly_lowercase_words():
+    texts = ["Mr Mark Rutte spoke", "a mark of respect", "will mark the day", "an indelible mark",
+             "Mr Mark Rutte", "Mr Mark Rutte", "Mr Mark Rutte", "Mr Mark Rutte"]
+    names = tp.person_names(texts, min_docs=5)
+    assert "rutte" in names and "mark" not in names     # mark: 5 of 8 uses capitalised
+
+
+def test_share_change_with_intervals_brackets_point_estimate():
+    rng = np.random.default_rng(0)
+    n = 400
+    flag = pd.Series(rng.random(n) < 0.6)
+    group = pd.Series(rng.choice([-1, 0, 1, 2], n))
+    period = pd.Series(np.repeat(["A", "B"], n // 2))
+    out = tp.share_change_with_intervals(flag, group, period, "A", "B", n_boot=300, seed=1)
+    assert set(out["group"]) == {-1, 0, 1, 2}
+    assert (out["lo"] <= out["contribution"]).all() and (out["contribution"] <= out["hi"]).all()
+    point = tp.share_change_by_group(flag, group, period, "A", "B")
+    pd.testing.assert_series_equal(out["contribution"], point["contribution"])
