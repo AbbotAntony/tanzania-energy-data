@@ -128,3 +128,22 @@ def test_prep_flow_adds_up():
         - n["near-duplicates removed"] == n["included articles"]
     assert n["  of which before 2022-Q3 (descriptive only)"] \
         + n["  of which in main window (2022-Q3 on)"] == n["included articles"]
+
+
+def test_load_corpus_round_trip(tmp_path):
+    df = pd.DataFrame({
+        "post_id": [1, 2, 3], "pub_date": ["2022-06-30", "2022-07-01", "2023-01-05"],
+        "title": ["", "NA", "Gas"], "text": ["a", "b", "c"], "dateline": ["", "DODOMA", ""],
+        "topics": ["natural_gas"] * 3, "month": ["2022-06", "2022-07", "2023-01"],
+        "quarter": ["2022Q2", "2022Q3", "2023Q1"], "dup_of": ["", "", "1"], "jaccard": ["", "", "0.9"],
+        "off_topic": [False, False, False], "is_duplicate": [False, False, True],
+        "in_main_window": [False, True, True], "include": [True, True, False],
+        "passing_mention": [False, True, False], "topic_in_title": [False, False, True],
+    })
+    path = tmp_path / "corpus.csv"
+    df.to_csv(path, index=False)
+    all_rows = prep.load_corpus(path, analysis_only=False)
+    assert all_rows["title"].tolist() == ["", "NA", "Gas"]          # empty and "NA" stay strings
+    assert all_rows["include"].dtype == bool
+    assert all_rows["quarter"].iloc[1] == pd.Period("2022Q3", "Q")
+    assert prep.load_corpus(path)["post_id"].tolist() == [2]       # included and in window

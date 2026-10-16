@@ -152,6 +152,24 @@ def build_corpus(news_csv: Path, raw_dir: Path) -> pd.DataFrame:
     return df.sort_values(["pub_date", "post_id"]).reset_index(drop=True)
 
 
+def load_corpus(path: Path, analysis_only: bool = True) -> pd.DataFrame:
+    """Read data/nlp/corpus.csv back with proper types.
+
+    ``analysis_only`` keeps included articles in the main window (2022-Q3 on).
+    """
+    df = pd.read_csv(path, dtype={"dateline": str, "title": str, "text": str, "topics": str},
+                     keep_default_na=False, na_values={"dup_of": [""], "jaccard": [""]},
+                     parse_dates=["pub_date"])
+    for col in ("off_topic", "is_duplicate", "in_main_window", "include", "passing_mention",
+                "topic_in_title"):
+        df[col] = df[col].astype(str).eq("True")
+    df["month"] = pd.PeriodIndex(df["month"], freq="M")
+    df["quarter"] = pd.PeriodIndex(df["quarter"], freq="Q")
+    if analysis_only:
+        df = df[df["include"] & df["in_main_window"]].reset_index(drop=True)
+    return df
+
+
 def tag_dummies(df: pd.DataFrame) -> pd.DataFrame:
     return df["topics"].str.get_dummies(sep=";").reindex(columns=list(TOPICS), fill_value=0)
 
