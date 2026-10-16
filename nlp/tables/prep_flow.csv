@@ -1,0 +1,9 @@
+step,n
+scraped articles,1225
+text re-extracted from raw HTML,1225
+off-topic after removing links/captions,36
+near-duplicates removed,15
+included articles,1174
+  of which before 2022-Q3 (descriptive only),2
+  of which in main window (2022-Q3 on),1172
+"  of which passing mention (1 hit, not in title)",353

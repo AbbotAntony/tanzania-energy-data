@@ -1,0 +1,12 @@
+# Light NLP environment (Python 3.14), separate from the scraper's .venv:
+#   python -m venv nlp/.venv
+#   nlp/.venv/Scripts/python -m pip install -r nlp/requirements.txt
+# Heavy embedding/transformer packages go in requirements-embed.txt (Task 2+).
+beautifulsoup4==4.15.0
+lxml==6.1.3
+matplotlib==3.11.2
+numpy==2.5.4
+pandas==3.0.6
+pytest==9.1.1
+scikit-learn==1.9.1
+scipy==1.18.1
