@@ -292,6 +292,7 @@ python -m venv nlp\.venv
 nlp\.venv\Scripts\python.exe -m pip install -r nlp\requirements.txt
 nlp\.venv\Scripts\python.exe -m pip install -r nlp\requirements-embed.txt   # torch (CPU) + BERTopic, ~217 MB
 nlp\.venv\Scripts\python.exe nlp\scripts\01_prep.py             # clean corpus, coverage tables
+nlp\.venv\Scripts\python.exe nlp\scripts\01b_near_duplicates.py  # rewritten reposts (review nlp\config\near_duplicate_decisions.csv, then re-run 01)
 nlp\.venv\Scripts\python.exe nlp\scripts\02_topics_nmf.py       # NMF baseline (~9 min k-sweep)
 nlp\.venv\Scripts\python.exe nlp\scripts\02b_topics_bertopic.py # BERTopic + comparison
 nlp\.venv\Scripts\python.exe nlp\scripts\02c_gas_mentions.py    # gas discussed vs listed
@@ -309,11 +310,18 @@ specific Hub commit.
   links and photo captions can be dropped.
   * Topic tags are re-matched on the clean text. This removes 36 articles whose
     only gas or energy keyword was in a link to another story.
-  * 15 near-duplicate reposts are removed (word 5-gram Jaccard ≥ 0.8; the earliest
-    copy is kept).
-  * That leaves 1,174 articles. The **main analysis window starts in 2022-Q3**
-    (1,172 articles), because the API returns almost nothing earlier. Every quarter
-    from 2022-Q3 has at least 35 articles. Months with fewer than 10 articles, and
+  * Duplicates are removed in two passes, keeping the earliest copy each time:
+    * 15 near-identical reposts (word 5-gram Jaccard ≥ 0.8)
+    * 15 rewritten reposts that word overlap misses
+      (`01b_near_duplicates.py`). These are found from embedding similarity,
+      shared text and publication dates, then reviewed by hand in
+      `nlp/config/near_duplicate_decisions.csv`:
+      * 14 reposts with ≥ 70% shared text, sometimes reprinted months later
+      * 2 paraphrased rewrites, published within a week
+      * 22 pairs of partial text reuse, which are kept as separate articles
+  * That leaves 1,159 articles. The **main analysis window starts in 2022-Q3**
+    (1,157 articles), because the API returns almost nothing earlier. Every quarter
+    from 2022-Q3 has at least 34 articles. Months with fewer than 10 articles, and
     the partial current month, are flagged in `nlp/tables/prep_articles_per_month.csv`.
 * **NMF baseline.** NMF runs on TF-IDF (unigrams and bigrams).
   * Officials' names are stop words, defined as words that follow a title (Mr,
@@ -336,11 +344,18 @@ specific Hub commit.
 
   | | NMF (k=17) | BERTopic |
   |---|---|---|
-  | Topics | 17 | 20, plus 20% outliers |
-  | Coherence (NPMI, same reference vocabulary) | 0.40 | 0.32 |
-  | Topic diversity | 0.97 | 0.91 |
-  | Stability (AMI of assignments across 5 seeds) | 0.68 | 0.80 |
-  | Agreement between the models (AMI) | 0.60 | |
+  | Topics | 17 | 19, plus 18% outliers |
+  | Coherence (NPMI, same reference vocabulary) | 0.42 | 0.34 |
+  | Topic diversity | 0.96 | 0.94 |
+  | Stability (AMI of assignments across 5 seeds) | 0.73 | 0.77 |
+  | Agreement between the models (AMI) | 0.59 | |
+
+  * Removing the 15 rewritten reposts changed 2 of the 17 NMF topics.
+    * "Zanzibar–Union affairs" disappeared, because it rested on duplicated
+      copies of a few Union articles.
+    * "Local communities & CSR", the least coherent topic, also disappeared.
+    * "EWURA & utility regulation" and "China relations" took their places.
+    * The other 15 topics kept 11–15 of their top 15 terms.
 
 * **How gas is mentioned.** A rule-based classifier (`energy_nlp/mentions.py`,
   rule version 2, following codebook v4) labels each gas mention as one of:
@@ -365,16 +380,16 @@ specific Hub commit.
   * The share of articles that mention natural gas rose from **52% (2022-Q3 to
     2024-Q4) to 62% (2025-Q1 to 2026-Q3)**.
   * Among gas-mentioning articles, the share that actually discuss gas fell from
-    **84% to 73%** (−11.5 points, 95% CI −17.7 to −5.1). This uses the rule-based
+    **84% to 73%** (−10.7 points, 95% CI −17.2 to −3.9). This uses the rule-based
     classifier, so it is indicative until validated.
-  * **About 85% of the rise** (8.7 of 10.3 points) is articles where gas appears
+  * **About 81% of the rise** (8.2 of 10.1 points) is articles where gas appears
     only in lists:
-    * energy-mix lists +4.6 points [1.9, 7.2]
-    * resource-wealth lists +2.8 [0.7, 5.0]
-    * project/sector lists +1.3 [−0.9, 3.3]
+    * energy-mix lists +4.5 points [1.9, 7.3]
+    * resource-wealth lists +2.8 [0.8, 4.8]
+    * project/sector lists +1.0 [−1.0, 3.0]
 
     Without the project/sector lists, list-only mentions still account for 72% of
-    the rise. The rise in articles that discuss gas, +1.6 [−4.2, 7.3], cannot be
+    the rise. The rise in articles that discuss gas, +1.9 [−3.7, 8.3], cannot be
     told apart from zero.
   * Adding project/sector lists to the rule (codebook v4) **strengthens** this
     finding. Under the earlier rule (v1), the drop was 90% → 81% (−9.4 points),
@@ -382,15 +397,17 @@ specific Hub commit.
 * **The rise is not gas-sector news.** In both models the gas-sector topics stay flat
   or fall: LNG, CNG and gas fields. The increase comes from general economic and
   development coverage.
-  * In NMF, the industrialisation and regional growth topic adds +5.1 to +7.6
+  * In NMF, the industrialisation and regional growth topic adds +5.0 to +7.3
     points at every k tested.
-  * In BERTopic, it comes from outliers, economic diplomacy, Middle East fuel-price
-    shocks and macroeconomic coverage. Most of NMF's industrialisation articles fall
-    under BERTopic's diplomacy, outlier and macro clusters.
-  * The two models disagree on clean cooking (NMF +3.3 points, BERTopic −0.9),
+  * In BERTopic, the rise is spread across several clusters: the broad power and
+    renewables cluster (+3.3 points), outliers, Middle East fuel-price shocks, the
+    oil-and-gas sector cluster, economic diplomacy and macroeconomic coverage. In
+    both models the LNG topic falls (BERTopic −2.3 points, 95% CI −4.0 to −0.7).
+  * The two models disagree on clean cooking (NMF +2.8 points, BERTopic −1.1),
     because NMF's topic is broader.
+  * Without passing mentions, all 17 NMF topic trends keep their direction.
 * **Hydropower.** The JNHPP dam topic is largest in 2022–23, while the dam was being
-  built. It falls by about 5 points of coverage between the two periods. The first
+  built. It falls by about 6 points of coverage between the two periods. The first
   turbine (2024-Q1) shows up as a one-quarter jump in articles tagged JNHPP.
 * **Coverage and the gas-to-hydro shift** (`link_*.csv`, `link_gas_jnhpp.png`).
   This compares quarterly coverage with BoT/TPDC quarterly gas consumption

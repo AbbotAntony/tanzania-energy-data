@@ -1,22 +1,21 @@
 topic,label,2022Q3-2024Q4,2025Q1-2026Q3,contribution,lo,hi
--1,Outliers (no topic),0.1013,0.1487,0.0474,0.007,0.0858
-1,Economic diplomacy & trade,0.0535,0.0839,0.0303,0.0017,0.0614
-9,Fuel prices & Middle East shocks,0.0153,0.0348,0.0195,0.0017,0.0379
-18,Regional oil & gas conferences,0.0038,0.0222,0.0183,0.0069,0.0313
-3,"Macroeconomy, debt & FDI",0.0229,0.0396,0.0166,-0.0028,0.0372
-6,Upstream exploration & licensing,0.0268,0.0396,0.0128,-0.0091,0.034
-11,Renewables & generation mix,0.0153,0.0253,0.01,-0.0072,0.0256
-5,EACOP crude oil pipeline,0.0076,0.0158,0.0082,-0.0051,0.0202
-19,Extractives & natural resource wealth,0.0076,0.0142,0.0066,-0.0058,0.0187
-0,"Power generation, JNHPP & grid",0.021,0.0253,0.0043,-0.0144,0.0214
-2,Ruling party & elections,0.0076,0.0111,0.0034,-0.0084,0.0136
-15,Climate & environment,0.0115,0.0127,0.0012,-0.0109,0.0133
-17,China relations,0.0038,0.0047,0.0009,-0.0064,0.0079
-12,"Fertiliser, helium & gas-based industry",0.0229,0.0222,-0.0008,-0.0189,0.0167
-16,Public enterprises & Treasury Registrar,0.0038,0.0016,-0.0022,-0.0096,0.0032
-13,"Ports, SEZs & logistics",0.0191,0.0127,-0.0065,-0.0217,0.0082
-10,Clean cooking,0.0325,0.0237,-0.0088,-0.0295,0.0105
-4,CNG for vehicles,0.0574,0.0459,-0.0115,-0.0388,0.0152
-7,Gas fields & production,0.0382,0.0253,-0.0129,-0.0356,0.0068
-8,"Budget, revenue & public spending",0.0153,0.0016,-0.0137,-0.0249,-0.0029
-14,LNG project & investment deals,0.0306,0.0079,-0.0227,-0.0392,-0.0074
+0,"Power generation, JNHPP & renewables",0.0467,0.0799,0.0332,0.005,0.0601
+-1,Outliers (no topic),0.1012,0.1262,0.025,-0.0122,0.0598
+8,Fuel prices & Middle East shocks,0.0156,0.0367,0.0212,0.0029,0.0387
+7,"Oil & gas sector, helium & conferences",0.0214,0.0415,0.0201,-0.0001,0.0398
+1,Economic diplomacy & trade,0.0506,0.0687,0.0181,-0.0103,0.0454
+5,"Macroeconomy, debt & FDI",0.0156,0.0288,0.0132,-0.0047,0.0297
+6,Upstream exploration & licensing,0.0272,0.0399,0.0127,-0.0065,0.0333
+18,Extractives & natural resource wealth,0.0078,0.016,0.0082,-0.0037,0.0217
+17,Digital economy & AI,0.0019,0.0096,0.0076,-0.0007,0.0172
+2,Ruling party & elections,0.0078,0.0128,0.005,-0.0056,0.0162
+4,EACOP crude oil pipeline,0.0136,0.0176,0.004,-0.0099,0.0178
+15,Climate & environment,0.0117,0.0128,0.0011,-0.0127,0.0133
+14,Public enterprises & Treasury Registrar,0.0019,0.0016,-0.0003,-0.0058,0.0048
+16,China relations,0.0039,0.0032,-0.0007,-0.0078,0.0064
+11,"Ports, SEZs & logistics",0.0195,0.0144,-0.0051,-0.0203,0.0107
+9,Gas fields & production,0.0331,0.0256,-0.0075,-0.0284,0.0116
+3,CNG for vehicles,0.0564,0.0479,-0.0085,-0.0359,0.0169
+12,Clean cooking,0.035,0.024,-0.0111,-0.0312,0.0105
+10,"Budget, revenue & public spending",0.0156,0.0016,-0.014,-0.0256,-0.0039
+13,LNG project & investment deals,0.0311,0.008,-0.0231,-0.0403,-0.0074

@@ -117,8 +117,40 @@ def find_duplicates(df: pd.DataFrame, threshold: float = DUP_JACCARD) -> pd.Data
     return pd.DataFrame(rows, columns=["post_id", "dup_of", "jaccard"])
 
 
-def build_corpus(news_csv: Path, raw_dir: Path) -> pd.DataFrame:
-    """One row per scraped article, with clean text and inclusion flags."""
+def near_duplicate_groups(decisions: pd.DataFrame, df: pd.DataFrame) -> pd.DataFrame:
+    """Apply reviewed near-duplicate decisions (dedup.py): pairs marked
+    ``remove_later`` are linked into groups; in each group the earliest article
+    (then lowest id) is kept. Returns ``post_id, near_dup_of`` for removed rows."""
+    pairs = decisions[decisions["decision"] == "remove_later"]
+    known = set(df["post_id"])
+    parent: dict[int, int] = {}
+
+    def find(x: int) -> int:
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]
+            x = parent[x]
+        return x
+
+    for a, b in zip(pairs["post_a"], pairs["post_b"]):
+        if a in known and b in known:
+            parent[find(a)] = find(b)
+    order = df.set_index("post_id")["pub_date"]
+    groups: dict[int, list[int]] = {}
+    for x in parent:
+        groups.setdefault(find(x), []).append(x)
+    rows = []
+    for members in groups.values():
+        keep = min(members, key=lambda p: (order[p], p))
+        rows += [(p, keep) for p in members if p != keep]
+    return pd.DataFrame(rows, columns=["post_id", "near_dup_of"])
+
+
+def build_corpus(news_csv: Path, raw_dir: Path, near_dup_decisions: Path | None = None) -> pd.DataFrame:
+    """One row per scraped article, with clean text and inclusion flags.
+
+    ``near_dup_decisions`` is the reviewed decisions file from dedup.py; when
+    given, rewritten reposts marked ``remove_later`` are excluded as well."""
     src = pd.read_csv(news_csv)
     html = load_raw_html(Path(raw_dir))
     df = pd.DataFrame({
@@ -147,8 +179,15 @@ def build_corpus(news_csv: Path, raw_dir: Path) -> pd.DataFrame:
     df = df.merge(dups, on="post_id", how="left")
     df["is_duplicate"] = df["dup_of"].notna()
     df["dup_of"] = df["dup_of"].astype("Int64")
+    near = pd.DataFrame(columns=["post_id", "near_dup_of"])
+    if near_dup_decisions is not None and Path(near_dup_decisions).exists():
+        near = near_duplicate_groups(pd.read_csv(near_dup_decisions),
+                                     df[~df["off_topic"] & ~df["is_duplicate"]])
+    df = df.merge(near, on="post_id", how="left")
+    df["near_dup_of"] = df["near_dup_of"].astype("Int64")
+    df["is_near_duplicate"] = df["near_dup_of"].notna()
     df["in_main_window"] = df["quarter"] >= MAIN_WINDOW_START
-    df["include"] = ~df["off_topic"] & ~df["is_duplicate"]
+    df["include"] = ~df["off_topic"] & ~df["is_duplicate"] & ~df["is_near_duplicate"]
     return df.sort_values(["pub_date", "post_id"]).reset_index(drop=True)
 
 
@@ -158,9 +197,12 @@ def load_corpus(path: Path, analysis_only: bool = True) -> pd.DataFrame:
     ``analysis_only`` keeps included articles in the main window (2022-Q3 on).
     """
     df = pd.read_csv(path, dtype={"dateline": str, "title": str, "text": str, "topics": str},
-                     keep_default_na=False, na_values={"dup_of": [""], "jaccard": [""]},
+                     keep_default_na=False,
+                     na_values={"dup_of": [""], "jaccard": [""], "near_dup_of": [""]},
                      parse_dates=["pub_date"])
-    for col in ("off_topic", "is_duplicate", "in_main_window", "include", "passing_mention",
+    if "is_near_duplicate" not in df:                     # corpus files from before the second pass
+        df["is_near_duplicate"] = "False"
+    for col in ("off_topic", "is_duplicate", "is_near_duplicate", "in_main_window", "include", "passing_mention",
                 "topic_in_title"):
         df[col] = df[col].astype(str).eq("True")
     df["month"] = pd.PeriodIndex(df["month"], freq="M")
@@ -212,7 +254,8 @@ def prep_flow(df: pd.DataFrame) -> pd.DataFrame:
         ("scraped articles", len(df)),
         ("text re-extracted from raw HTML", int((df["text_source"] == "html").sum())),
         ("off-topic after removing links/captions", int(df["off_topic"].sum())),
-        ("near-duplicates removed", int(df["is_duplicate"].sum())),
+        ("near-duplicates removed (word overlap)", int(df["is_duplicate"].sum())),
+        ("rewritten reposts removed (reviewed, dedup.py)", int(df["is_near_duplicate"].sum())),
         ("included articles", int(df["include"].sum())),
         ("  of which before 2022-Q3 (descriptive only)", int((df["include"] & ~df["in_main_window"]).sum())),
         ("  of which in main window (2022-Q3 on)", int((df["include"] & df["in_main_window"]).sum())),

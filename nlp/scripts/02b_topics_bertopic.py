@@ -38,26 +38,25 @@ NMF_K = 17
 
 LABELS = {
     -1: ("Outliers (no topic)", None),
-    0: ("Power generation, JNHPP & grid", "jnhpp"),
+    0: ("Power generation, JNHPP & renewables", "jnhpp"),
     1: ("Economic diplomacy & trade", "diplomacy"),
     2: ("Ruling party & elections", "election"),
-    3: ("Macroeconomy, debt & FDI", "debt"),
-    4: ("CNG for vehicles", "cng stations"),
-    5: ("EACOP crude oil pipeline", "eacop project"),
+    3: ("CNG for vehicles", "cng stations"),
+    4: ("EACOP crude oil pipeline", "eacop project"),
+    5: ("Macroeconomy, debt & FDI", "debt"),
     6: ("Upstream exploration & licensing", "upstream"),
-    7: ("Gas fields & production", "ntorya"),
-    8: ("Budget, revenue & public spending", "budget"),
-    9: ("Fuel prices & Middle East shocks", "hormuz"),
-    10: ("Clean cooking", "charcoal"),
-    11: ("Renewables & generation mix", "renewable"),
-    12: ("Fertiliser, helium & gas-based industry", "fertiliser"),
-    13: ("Ports, SEZs & logistics", "cargo"),
-    14: ("LNG project & investment deals", "lng"),
+    7: ("Oil & gas sector, helium & conferences", "helium"),
+    8: ("Fuel prices & Middle East shocks", "hormuz"),
+    9: ("Gas fields & production", "ntorya"),
+    10: ("Budget, revenue & public spending", "budget"),
+    11: ("Ports, SEZs & logistics", "cargo"),
+    12: ("Clean cooking", "charcoal"),
+    13: ("LNG project & investment deals", "lng"),
+    14: ("Public enterprises & Treasury Registrar", "treasury registrar"),
     15: ("Climate & environment", "climate"),
-    16: ("Public enterprises & Treasury Registrar", "treasury registrar"),
-    17: ("China relations", "china"),
-    18: ("Regional oil & gas conferences", "conference"),
-    19: ("Extractives & natural resource wealth", "extractive"),
+    16: ("China relations", "china"),
+    17: ("Digital economy & AI", "digital"),
+    18: ("Extractives & natural resource wealth", "extractive"),
 }
 
 def make_model(stop: list[str], seed: int) -> BERTopic:
@@ -74,13 +73,8 @@ def make_model(stop: list[str], seed: int) -> BERTopic:
 
 
 def load_embeddings(d: pd.DataFrame, texts: list[str]) -> np.ndarray:
-    path, ids = DATA_DIR / "emb_minilm.npy", DATA_DIR / "emb_minilm_ids.csv"
-    if path.exists() and ids.exists() and pd.read_csv(ids)["post_id"].tolist() == d["post_id"].tolist():
-        return np.load(path)
-    E = embed.embed_documents(texts)
-    np.save(path, E)
-    d[["post_id"]].to_csv(ids, index=False)
-    return E
+    return embed.cached_embeddings(d["post_id"].tolist(), texts, DATA_DIR / "emb_minilm.npy",
+                                   DATA_DIR / "emb_minilm_ids.csv")
 
 
 def term_idx(terms: list[str], vocab_pos: dict[str, int]) -> np.ndarray:

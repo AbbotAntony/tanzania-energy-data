@@ -118,14 +118,16 @@ def test_prep_flow_adds_up():
         "text_source": ["html"] * 5,
         "off_topic": [False, True, False, False, False],
         "is_duplicate": [False, False, True, False, False],
+        "is_near_duplicate": [False, False, False, False, True],
         "in_main_window": [False, True, True, True, True],
         "passing_mention": [False, False, False, True, False],
     })
-    df["include"] = ~df["off_topic"] & ~df["is_duplicate"]
+    df["include"] = ~df["off_topic"] & ~df["is_duplicate"] & ~df["is_near_duplicate"]
     n = dict(prep.prep_flow(df).values)
-    assert n["included articles"] == 3
+    assert n["included articles"] == 2
     assert n["scraped articles"] - n["off-topic after removing links/captions"] \
-        - n["near-duplicates removed"] == n["included articles"]
+        - n["near-duplicates removed (word overlap)"] \
+        - n["rewritten reposts removed (reviewed, dedup.py)"] == n["included articles"]
     assert n["  of which before 2022-Q3 (descriptive only)"] \
         + n["  of which in main window (2022-Q3 on)"] == n["included articles"]
 

@@ -1,39 +1,38 @@
 model,topic,substantive,energy_mix_list,project_list,resource_list,total
-NMF,Industrialisation & regional growth,0.0401,0.0095,0.0,0.0142,0.0638
-NMF,Clean cooking & climate,0.0099,0.0198,0.0032,0.0016,0.0345
-NMF,Fuel prices & Middle East shocks,0.0126,0.0057,0.0079,0.0047,0.0309
-NMF,EACOP crude oil pipeline,0.01,0.0047,0.0032,0.0,0.017900000000000003
-NMF,Upstream exploration & licensing,0.0128,0.0,0.0032,0.0,0.016
-NMF,Ruling party & elections,0.0073,0.0,-0.0003,0.0079,0.0149
-NMF,Electricity grid & generation,-0.0011,0.0111,0.0016,-0.0057,0.005900000000000001
-NMF,Public enterprises & Treasury Registrar,-0.0046,0.0016,0.0032,0.0016,0.0018000000000000002
-NMF,CNG for vehicles,-0.0017,0.0,0.0016,0.0,-9.999999999999983e-05
-NMF,"Diplomacy, trade & investment ties",0.0058,0.0009,-0.0121,0.0009,-0.0045000000000000005
-NMF,Gas fields & production,-0.006,0.0,0.0,0.0,-0.006
-NMF,JNHPP dam & Rufiji water,-0.0057,-0.0022,0.0016,-0.0003,-0.006600000000000001
-NMF,Local communities & CSR,-0.0173,-0.0007,0.0044,0.0057,-0.007899999999999997
-NMF,LNG project,-0.0094,0.0,0.0,0.0,-0.0094
-NMF,Zanzibar-Union affairs,-0.0083,0.0,-0.0019,0.0,-0.0102
-NMF,Budget & public finance,-0.0138,-0.0022,0.0016,0.0,-0.0144
-NMF,Macroeconomic figures,-0.0148,-0.0019,-0.0042,-0.0026,-0.0235
-BERTopic,Outliers (no topic),0.0285,0.0091,0.0076,0.0041,0.049300000000000004
-BERTopic,Economic diplomacy & trade,0.0235,0.0041,-0.009,0.0101,0.028699999999999996
-BERTopic,Fuel prices & Middle East shocks,0.0088,0.0044,0.0063,0.0,0.0195
-BERTopic,Regional oil & gas conferences,0.0152,0.0016,0.0016,0.0,0.0184
-BERTopic,"Macroeconomy, debt & FDI",0.0119,0.0016,0.0016,0.0016,0.016700000000000003
-BERTopic,Upstream exploration & licensing,0.0096,0.0,0.0032,0.0,0.012799999999999999
-BERTopic,Renewables & generation mix,0.0015,0.0076,0.0032,-0.0022,0.0101
-BERTopic,EACOP crude oil pipeline,0.0018,0.0032,0.0032,0.0,0.0082
-BERTopic,Extractives & natural resource wealth,-0.0007,0.0,-0.0019,0.0092,0.0066
-BERTopic,"Power generation, JNHPP & grid",-0.0017,0.0079,0.0,-0.0019,0.004300000000000001
-BERTopic,Ruling party & elections,-0.0007,0.0,-0.0003,0.0044,0.0034000000000000002
+NMF,Industrialisation & regional growth,0.0389,0.0096,0.0032,0.0128,0.0645
+NMF,Clean cooking & climate,0.0085,0.0167,0.0032,0.0016,0.030000000000000002
+NMF,Fuel prices & Middle East shocks,0.019,0.0025,0.0032,0.0032,0.0279
+NMF,EWURA & utility regulation,-0.0005,0.0144,0.0064,0.0,0.0203
+NMF,Upstream exploration & licensing,0.0139,-0.0019,0.0048,-0.0003,0.016499999999999997
+NMF,EACOP crude oil pipeline,0.0077,0.0016,-0.0019,0.0,0.007400000000000001
+NMF,Ruling party & elections,-0.0044,0.0016,-0.0003,0.0096,0.006499999999999999
+NMF,Electricity grid & generation,-0.002,0.008,0.0016,-0.0058,0.0018000000000000004
+NMF,China relations,-0.0026,-0.0003,0.0,0.0016,-0.0012999999999999997
+NMF,"Diplomacy, trade & investment ties",0.0092,-0.0007,-0.0143,0.0041,-0.0016999999999999993
+NMF,Gas fields & production,-0.0018,0.0,0.0,0.0,-0.0018
+NMF,CNG for vehicles,-0.0035,0.0,0.0016,0.0,-0.0019
+NMF,Public enterprises & Treasury Registrar,-0.0102,0.0,0.0032,0.0048,-0.0022000000000000014
+NMF,JNHPP dam & Rufiji water,-0.0065,-0.0042,-0.0003,0.0012,-0.0098
+NMF,LNG project,-0.0114,0.0,0.0,0.0,-0.0114
+NMF,Macroeconomic figures,-0.0097,0.0,-0.0023,-0.0046,-0.0166
+NMF,Budget & public finance,-0.0256,-0.0023,0.0016,0.0,-0.0263
+BERTopic,"Power generation, JNHPP & renewables",0.009,0.0236,0.0048,-0.0042,0.03319999999999999
+BERTopic,Outliers (no topic),0.0141,-0.0005,0.0044,0.0089,0.0269
+BERTopic,Fuel prices & Middle East shocks,0.0103,0.0044,0.0064,0.0,0.0211
+BERTopic,"Oil & gas sector, helium & conferences",0.0185,0.0016,0.0,0.0,0.0201
+BERTopic,Economic diplomacy & trade,0.0191,0.0028,-0.0124,0.0069,0.016399999999999998
+BERTopic,"Macroeconomy, debt & FDI",0.0084,0.0032,0.0016,0.0,0.0132
+BERTopic,Upstream exploration & licensing,0.0095,0.0,0.0032,0.0,0.0127
+BERTopic,Extractives & natural resource wealth,0.0028,0.0,-0.0019,0.0073,0.0082
+BERTopic,Digital economy & AI,0.0032,-0.0003,0.0032,0.0016,0.0077
+BERTopic,Ruling party & elections,0.0009,0.0,-0.0003,0.0044,0.005
+BERTopic,EACOP crude oil pipeline,-0.004,0.0032,0.0032,0.0016,0.004
 BERTopic,Climate & environment,-0.0042,0.0022,0.0016,0.0016,0.0012000000000000005
-BERTopic,China relations,-0.0007,0.0016,0.0,0.0,0.0009000000000000001
-BERTopic,"Fertiliser, helium & gas-based industry",-0.002,0.0,0.0,0.0013,-0.0007000000000000001
-BERTopic,Public enterprises & Treasury Registrar,-0.0022,0.0,0.0,0.0,-0.0022
-BERTopic,"Ports, SEZs & logistics",-0.002,-0.0003,-0.0042,0.0,-0.0065
-BERTopic,Clean cooking,-0.0103,0.0034,0.0,0.0,-0.0069
-BERTopic,CNG for vehicles,-0.0115,0.0,0.0,0.0,-0.0115
-BERTopic,Gas fields & production,-0.0129,0.0,0.0,0.0,-0.0129
-BERTopic,"Budget, revenue & public spending",-0.0137,0.0,0.0,0.0,-0.0137
-BERTopic,LNG project & investment deals,-0.0227,0.0,0.0,0.0,-0.0227
+BERTopic,Public enterprises & Treasury Registrar,-0.0003,0.0,0.0,0.0,-0.0003
+BERTopic,China relations,-0.0023,0.0016,0.0,0.0,-0.0006999999999999999
+BERTopic,"Ports, SEZs & logistics",-0.0005,-0.0003,-0.0042,0.0,-0.004999999999999999
+BERTopic,Gas fields & production,-0.0075,0.0,0.0,0.0,-0.0075
+BERTopic,CNG for vehicles,-0.0085,0.0,0.0,0.0,-0.0085
+BERTopic,Clean cooking,-0.0125,0.0034,0.0,0.0,-0.0091
+BERTopic,"Budget, revenue & public spending",-0.014,0.0,0.0,0.0,-0.014
+BERTopic,LNG project & investment deals,-0.0231,0.0,0.0,0.0,-0.0231

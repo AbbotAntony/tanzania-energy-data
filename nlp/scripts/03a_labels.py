@@ -127,6 +127,18 @@ def cmd_replace(sample_id: str, reason: str) -> None:
           f"(backup: {backup.name})")
 
 
+def cmd_reweight() -> None:
+    """Recompute N_h, n_h and weights for the current (cleaned) corpus."""
+    design = pd.read_csv(DESIGN)
+    corpus = prep.load_corpus(DATA_DIR / "corpus.csv")
+    new = lb.recompute_weights(design, corpus)
+    new.to_csv(DESIGN, index=False)
+    act = new[new["status"] == "active"]
+    print(act.groupby("stratum").agg(N_h=("N_h", "first"), n_h=("n_h", "first"),
+                                     weight=("weight", "first")).to_string())
+    print(f"weights sum to {act['weight'].sum():.0f} = corpus size {len(corpus)}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -139,6 +151,7 @@ def main() -> None:
     x = sub.add_parser("replace", help="exclude a sample row and add a blind replacement")
     x.add_argument("sample_id")
     x.add_argument("--reason", required=True)
+    sub.add_parser("reweight", help="recompute N_h and weights for the current corpus")
     args = ap.parse_args()
     if args.cmd == "sheet":
         cmd_sheet(args.force)
@@ -146,6 +159,8 @@ def main() -> None:
         cmd_import(args.round)
     elif args.cmd == "replace":
         cmd_replace(args.sample_id, args.reason)
+    elif args.cmd == "reweight":
+        cmd_reweight()
     else:
         cmd_recode_sheet(args.force)
 

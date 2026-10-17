@@ -15,7 +15,7 @@ sys.path[:0] = [str(Path(__file__).resolve().parents[2]), str(Path(__file__).res
 import matplotlib.pyplot as plt  # noqa: E402
 import pandas as pd  # noqa: E402
 
-from energy_nlp import DATA_DIR, FIGURES_DIR, ROOT, TABLES_DIR  # noqa: E402
+from energy_nlp import DATA_DIR, FIGURES_DIR, NLP_DIR, ROOT, TABLES_DIR  # noqa: E402
 from energy_nlp import prep  # noqa: E402
 
 INK, INK2, GRID, SURFACE = "#0b0b0b", "#52514e", "#e4e3df", "#ffffff"
@@ -76,7 +76,8 @@ def plot_coverage(monthly: pd.DataFrame, quarterly: pd.DataFrame, path: Path) ->
 def main() -> None:
     for d in (DATA_DIR, TABLES_DIR, FIGURES_DIR):
         d.mkdir(parents=True, exist_ok=True)
-    df = prep.build_corpus(ROOT / "data/processed/news_dailynews.csv", ROOT / "data/raw/dailynews")
+    df = prep.build_corpus(ROOT / "data/processed/news_dailynews.csv", ROOT / "data/raw/dailynews",
+                           NLP_DIR / "config" / "near_duplicate_decisions.csv")
 
     # Scrape date bounds the last complete month.
     retrieved = pd.to_datetime(pd.read_csv(ROOT / "data/processed/news_dailynews.csv")["retrieved_date"]).max()
@@ -94,8 +95,9 @@ def main() -> None:
     prep.tag_counts(df).to_csv(TABLES_DIR / "prep_articles_per_tag.csv", index=False)
     flow.to_csv(TABLES_DIR / "prep_flow.csv", index=False)
     # Exclusions by id/url only - no article text in committed tables.
-    excl = df.loc[df["off_topic"] | df["is_duplicate"],
-                  ["post_id", "pub_date", "url", "topics_scraper", "off_topic", "is_duplicate", "dup_of", "jaccard"]]
+    excl = df.loc[df["off_topic"] | df["is_duplicate"] | df["is_near_duplicate"],
+                  ["post_id", "pub_date", "url", "topics_scraper", "off_topic", "is_duplicate", "dup_of", "jaccard",
+                   "is_near_duplicate", "near_dup_of"]]
     excl.assign(pub_date=excl["pub_date"].dt.date).to_csv(TABLES_DIR / "prep_excluded.csv", index=False)
     plot_coverage(monthly, quarterly, FIGURES_DIR / "prep_coverage.png")
 

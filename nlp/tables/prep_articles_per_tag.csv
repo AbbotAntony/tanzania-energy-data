@@ -1,10 +1,10 @@
 tag,all_years,main_window,share_main_window
-natural_gas,676,674,0.575
+natural_gas,666,664,0.574
 hfo,7,7,0.006
-pipeline,197,197,0.168
+pipeline,193,193,0.167
 gasco,9,8,0.007
-tpdc,281,279,0.238
-songo_songo,61,61,0.052
-mtwara_mnazi,202,201,0.172
-jnhpp,414,414,0.353
-gas_power_plants,73,73,0.062
+tpdc,280,278,0.24
+songo_songo,60,60,0.052
+mtwara_mnazi,201,200,0.173
+jnhpp,410,410,0.354
+gas_power_plants,71,71,0.061

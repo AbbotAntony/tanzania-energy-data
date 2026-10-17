@@ -55,3 +55,22 @@ def embed_documents(texts: list[str], model_name: str = MODEL_NAME, batch_size: 
     emb = model.encode(chunks, batch_size=batch_size, show_progress_bar=True,
                        normalize_embeddings=True, convert_to_numpy=True)
     return mean_pool(emb, np.array(owner), len(texts))
+
+
+def cached_embeddings(post_ids: list[int], texts: list[str], path, ids_path) -> np.ndarray:
+    """Embeddings for ``post_ids`` in that order, reusing cached rows by post id and
+    computing only missing ones. The cache keeps every article it has seen."""
+    import pandas as pd
+
+    have: dict[int, np.ndarray] = {}
+    if path.exists() and ids_path.exists():
+        E = np.load(path)
+        have = dict(zip(pd.read_csv(ids_path)["post_id"].tolist(), E))
+    missing = [i for i, p in enumerate(post_ids) if p not in have]
+    if missing:
+        new = embed_documents([texts[i] for i in missing])
+        have.update({post_ids[i]: v for i, v in zip(missing, new)})
+        ids = list(have)
+        np.save(path, np.vstack([have[p] for p in ids]))
+        pd.DataFrame({"post_id": ids}).to_csv(ids_path, index=False)
+    return np.vstack([have[p] for p in post_ids])

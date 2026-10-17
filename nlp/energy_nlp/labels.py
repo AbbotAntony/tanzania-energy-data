@@ -100,6 +100,23 @@ def draw_replacement(design: pd.DataFrame, corpus: pd.DataFrame, sample_id: str,
     return pd.concat([d, pd.DataFrame([new])], ignore_index=True)
 
 
+def recompute_weights(design: pd.DataFrame, corpus: pd.DataFrame) -> pd.DataFrame:
+    """Refresh N_h (stratum size in ``corpus``), n_h (active rows) and weights.
+
+    Excluded rows keep their record but get no weight."""
+    d = ensure_status(design)
+    years = corpus["pub_date"].dt.year
+    gas = corpus["topics"].str.split(";").map(lambda t: "natural_gas" in t)
+    N = pd.Series(1, index=corpus.index).groupby([years, gas]).sum()
+    active = d["status"] == "active"
+    n = d[active].groupby(["year", "gas_tagged"]).size()
+    keys = list(zip(d["year"], d["gas_tagged"].astype(bool)))
+    d["N_h"] = [int(N.get(k, 0)) for k in keys]
+    d["n_h"] = [int(n.get(k, 0)) for k in keys]
+    d["weight"] = np.where(active, (d["N_h"] / d["n_h"].where(d["n_h"] > 0)).round(4), np.nan)
+    return d
+
+
 def append_to_xlsx(path: Path, rows: pd.DataFrame) -> None:
     """Append blank-coded rows to an existing labelling workbook without touching
     existing cells; dropdowns and formatting are extended to the new rows. The

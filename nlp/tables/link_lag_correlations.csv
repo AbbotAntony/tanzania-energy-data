@@ -1,57 +1,57 @@
 sample,coverage_measure,gas_series,lag_quarters,r,n,r_crit_5pct,exceeds_5pct
-all quarters,JNHPP focus,gas for power,-3,0.115,14,0.524,False
-all quarters,JNHPP focus,gas for power,-2,0.179,14,0.524,False
-all quarters,JNHPP focus,gas for power,-1,-0.169,14,0.524,False
-all quarters,JNHPP focus,gas for power,0,-0.222,14,0.524,False
-all quarters,JNHPP focus,gas for power,1,0.119,13,0.544,False
-all quarters,JNHPP focus,gas for power,2,-0.284,12,0.566,False
-all quarters,JNHPP focus,gas for power,3,0.628,11,0.591,True
-all quarters,JNHPP mention,gas for power,-3,-0.341,14,0.524,False
-all quarters,JNHPP mention,gas for power,-2,0.367,14,0.524,False
-all quarters,JNHPP mention,gas for power,-1,-0.1,14,0.524,False
-all quarters,JNHPP mention,gas for power,0,-0.062,14,0.524,False
-all quarters,JNHPP mention,gas for power,1,0.022,13,0.544,False
-all quarters,JNHPP mention,gas for power,2,-0.37,12,0.566,False
-all quarters,JNHPP mention,gas for power,3,0.477,11,0.591,False
-all quarters,gas focus,gas for power,-3,0.422,14,0.524,False
-all quarters,gas focus,gas for power,-2,-0.241,14,0.524,False
-all quarters,gas focus,gas for power,-1,0.149,14,0.524,False
-all quarters,gas focus,gas for power,0,-0.085,14,0.524,False
-all quarters,gas focus,gas for power,1,0.086,13,0.544,False
-all quarters,gas focus,gas for power,2,0.176,12,0.566,False
-all quarters,gas focus,gas for power,3,-0.11,11,0.591,False
-all quarters,gas mention,gas for power,-3,0.225,14,0.524,False
-all quarters,gas mention,gas for power,-2,-0.325,14,0.524,False
-all quarters,gas mention,gas for power,-1,0.025,14,0.524,False
-all quarters,gas mention,gas for power,0,0.098,14,0.524,False
-all quarters,gas mention,gas for power,1,0.129,13,0.544,False
-all quarters,gas mention,gas for power,2,0.442,12,0.566,False
-all quarters,gas mention,gas for power,3,0.046,11,0.591,False
-repeat quarter set missing,JNHPP focus,gas for power,-3,0.301,12,0.566,False
-repeat quarter set missing,JNHPP focus,gas for power,-2,0.271,12,0.566,False
-repeat quarter set missing,JNHPP focus,gas for power,-1,-0.071,12,0.566,False
-repeat quarter set missing,JNHPP focus,gas for power,0,-0.4,12,0.566,False
-repeat quarter set missing,JNHPP focus,gas for power,1,-0.268,12,0.566,False
-repeat quarter set missing,JNHPP focus,gas for power,2,-0.284,12,0.566,False
-repeat quarter set missing,JNHPP focus,gas for power,3,0.628,11,0.591,True
-repeat quarter set missing,JNHPP mention,gas for power,-3,-0.268,12,0.566,False
-repeat quarter set missing,JNHPP mention,gas for power,-2,0.432,12,0.566,False
-repeat quarter set missing,JNHPP mention,gas for power,-1,-0.157,12,0.566,False
-repeat quarter set missing,JNHPP mention,gas for power,0,-0.127,12,0.566,False
-repeat quarter set missing,JNHPP mention,gas for power,1,-0.071,12,0.566,False
-repeat quarter set missing,JNHPP mention,gas for power,2,-0.37,12,0.566,False
-repeat quarter set missing,JNHPP mention,gas for power,3,0.477,11,0.591,False
-repeat quarter set missing,gas focus,gas for power,-3,0.441,12,0.566,False
-repeat quarter set missing,gas focus,gas for power,-2,-0.326,12,0.566,False
-repeat quarter set missing,gas focus,gas for power,-1,0.153,12,0.566,False
-repeat quarter set missing,gas focus,gas for power,0,0.009,12,0.566,False
-repeat quarter set missing,gas focus,gas for power,1,-0.035,12,0.566,False
-repeat quarter set missing,gas focus,gas for power,2,0.176,12,0.566,False
-repeat quarter set missing,gas focus,gas for power,3,-0.11,11,0.591,False
-repeat quarter set missing,gas mention,gas for power,-3,0.256,12,0.566,False
-repeat quarter set missing,gas mention,gas for power,-2,-0.362,12,0.566,False
-repeat quarter set missing,gas mention,gas for power,-1,-0.009,12,0.566,False
-repeat quarter set missing,gas mention,gas for power,0,0.098,12,0.566,False
-repeat quarter set missing,gas mention,gas for power,1,-0.028,12,0.566,False
-repeat quarter set missing,gas mention,gas for power,2,0.442,12,0.566,False
-repeat quarter set missing,gas mention,gas for power,3,0.046,11,0.591,False
+all quarters,JNHPP focus,gas for power,-3,0.118,14,0.524,False
+all quarters,JNHPP focus,gas for power,-2,0.193,14,0.524,False
+all quarters,JNHPP focus,gas for power,-1,-0.198,14,0.524,False
+all quarters,JNHPP focus,gas for power,0,-0.161,14,0.524,False
+all quarters,JNHPP focus,gas for power,1,0.053,13,0.544,False
+all quarters,JNHPP focus,gas for power,2,-0.27,12,0.566,False
+all quarters,JNHPP focus,gas for power,3,0.593,11,0.591,True
+all quarters,JNHPP mention,gas for power,-3,-0.352,14,0.524,False
+all quarters,JNHPP mention,gas for power,-2,0.352,14,0.524,False
+all quarters,JNHPP mention,gas for power,-1,-0.093,14,0.524,False
+all quarters,JNHPP mention,gas for power,0,-0.06,14,0.524,False
+all quarters,JNHPP mention,gas for power,1,0.001,13,0.544,False
+all quarters,JNHPP mention,gas for power,2,-0.338,12,0.566,False
+all quarters,JNHPP mention,gas for power,3,0.466,11,0.591,False
+all quarters,gas focus,gas for power,-3,0.413,14,0.524,False
+all quarters,gas focus,gas for power,-2,-0.213,14,0.524,False
+all quarters,gas focus,gas for power,-1,0.115,14,0.524,False
+all quarters,gas focus,gas for power,0,-0.091,14,0.524,False
+all quarters,gas focus,gas for power,1,0.057,13,0.544,False
+all quarters,gas focus,gas for power,2,0.16,12,0.566,False
+all quarters,gas focus,gas for power,3,-0.06,11,0.591,False
+all quarters,gas mention,gas for power,-3,0.209,14,0.524,False
+all quarters,gas mention,gas for power,-2,-0.302,14,0.524,False
+all quarters,gas mention,gas for power,-1,0.012,14,0.524,False
+all quarters,gas mention,gas for power,0,0.088,14,0.524,False
+all quarters,gas mention,gas for power,1,0.132,13,0.544,False
+all quarters,gas mention,gas for power,2,0.426,12,0.566,False
+all quarters,gas mention,gas for power,3,0.063,11,0.591,False
+repeat quarter set missing,JNHPP focus,gas for power,-3,0.297,12,0.566,False
+repeat quarter set missing,JNHPP focus,gas for power,-2,0.268,12,0.566,False
+repeat quarter set missing,JNHPP focus,gas for power,-1,-0.066,12,0.566,False
+repeat quarter set missing,JNHPP focus,gas for power,0,-0.326,12,0.566,False
+repeat quarter set missing,JNHPP focus,gas for power,1,-0.317,12,0.566,False
+repeat quarter set missing,JNHPP focus,gas for power,2,-0.27,12,0.566,False
+repeat quarter set missing,JNHPP focus,gas for power,3,0.593,11,0.591,True
+repeat quarter set missing,JNHPP mention,gas for power,-3,-0.287,12,0.566,False
+repeat quarter set missing,JNHPP mention,gas for power,-2,0.422,12,0.566,False
+repeat quarter set missing,JNHPP mention,gas for power,-1,-0.152,12,0.566,False
+repeat quarter set missing,JNHPP mention,gas for power,0,-0.141,12,0.566,False
+repeat quarter set missing,JNHPP mention,gas for power,1,-0.076,12,0.566,False
+repeat quarter set missing,JNHPP mention,gas for power,2,-0.338,12,0.566,False
+repeat quarter set missing,JNHPP mention,gas for power,3,0.466,11,0.591,False
+repeat quarter set missing,gas focus,gas for power,-3,0.464,12,0.566,False
+repeat quarter set missing,gas focus,gas for power,-2,-0.302,12,0.566,False
+repeat quarter set missing,gas focus,gas for power,-1,0.127,12,0.566,False
+repeat quarter set missing,gas focus,gas for power,0,0.006,12,0.566,False
+repeat quarter set missing,gas focus,gas for power,1,-0.072,12,0.566,False
+repeat quarter set missing,gas focus,gas for power,2,0.16,12,0.566,False
+repeat quarter set missing,gas focus,gas for power,3,-0.06,11,0.591,False
+repeat quarter set missing,gas mention,gas for power,-3,0.25,12,0.566,False
+repeat quarter set missing,gas mention,gas for power,-2,-0.342,12,0.566,False
+repeat quarter set missing,gas mention,gas for power,-1,-0.026,12,0.566,False
+repeat quarter set missing,gas mention,gas for power,0,0.103,12,0.566,False
+repeat quarter set missing,gas mention,gas for power,1,-0.03,12,0.566,False
+repeat quarter set missing,gas mention,gas for power,2,0.426,12,0.566,False
+repeat quarter set missing,gas mention,gas for power,3,0.063,11,0.591,False

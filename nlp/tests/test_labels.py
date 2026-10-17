@@ -212,3 +212,15 @@ def test_append_to_xlsx_keeps_existing_cells_and_extends_dropdowns(tmp_path):
     assert [ws.cell(last, j).value for j in (1, 2, 3, 4)] == ["S999", "New", "New text", None]
     assert all(str(dv.sqref).endswith(str(last)) for dv in ws.data_validations.dataValidation)
     assert ws.cell(last, 3).alignment.wrap_text
+
+
+def test_recompute_weights_after_corpus_shrinks_and_exclusion():
+    design, c = _design_and_corpus()
+    design = lb.draw_replacement(design, c, design[design["stratum"] == "2023_gas"].iloc[0]["sample_id"], "dup")
+    smaller = c[c["post_id"] != c[(c["pub_date"].dt.year == 2023) & c["topics"].str.contains("natural_gas")]
+                .iloc[-1]["post_id"]]                              # one 2023 gas article removed
+    out = lb.recompute_weights(design, smaller)
+    g = out[(out["stratum"] == "2023_gas") & (out["status"] == "active")]
+    assert (g["N_h"] == 39).all() and (g["n_h"] == 20).all() and (g["weight"] == 1.95).all()
+    assert out.loc[out["status"] == "excluded", "weight"].isna().all()
+    assert out.loc[out["status"] == "active"].groupby("stratum")["weight"].sum().round(6).to_dict()["2022_gas"] == 25

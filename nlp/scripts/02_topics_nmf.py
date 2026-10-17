@@ -55,11 +55,11 @@ LABELS = {
     9: ("Gas fields & production", "wells"),
     10: ("Ruling party & elections", "election"),
     11: ("JNHPP dam & Rufiji water", "rufiji"),
-    12: ("Public enterprises & Treasury Registrar", "treasury registrar"),
-    13: ("Local communities & CSR", "csr"),
+    12: ("EWURA & utility regulation", "ewura"),
+    13: ("Public enterprises & Treasury Registrar", "treasury registrar"),
     14: ("LNG project", "lng"),
-    15: ("Zanzibar-Union affairs", "union"),
-    16: ("Macroeconomic figures", "gdp"),
+    15: ("Macroeconomic figures", "gdp"),
+    16: ("China relations", "china"),
 }
 
 
