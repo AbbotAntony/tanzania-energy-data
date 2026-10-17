@@ -1,0 +1,44 @@
+true,pred,n,matrix
+substantive,substantive,68,A: gas-mention rule
+substantive,resource_list,1,A: gas-mention rule
+substantive,energy_mix_list,3,A: gas-mention rule
+substantive,none,2,A: gas-mention rule
+resource_list,substantive,2,A: gas-mention rule
+resource_list,resource_list,3,A: gas-mention rule
+resource_list,energy_mix_list,0,A: gas-mention rule
+resource_list,none,0,A: gas-mention rule
+energy_mix_list,substantive,6,A: gas-mention rule
+energy_mix_list,resource_list,1,A: gas-mention rule
+energy_mix_list,energy_mix_list,11,A: gas-mention rule
+energy_mix_list,none,0,A: gas-mention rule
+none,substantive,3,A: gas-mention rule
+none,resource_list,1,A: gas-mention rule
+none,energy_mix_list,0,A: gas-mention rule
+none,none,49,A: gas-mention rule
+negative,negative,0,B: vader (substantive only)
+negative,neutral,0,B: vader (substantive only)
+negative,positive,3,B: vader (substantive only)
+neutral,negative,1,B: vader (substantive only)
+neutral,neutral,0,B: vader (substantive only)
+neutral,positive,19,B: vader (substantive only)
+positive,negative,0,B: vader (substantive only)
+positive,neutral,0,B: vader (substantive only)
+positive,positive,45,B: vader (substantive only)
+negative,negative,0,B: finnews (substantive only)
+negative,neutral,2,B: finnews (substantive only)
+negative,positive,1,B: finnews (substantive only)
+neutral,negative,0,B: finnews (substantive only)
+neutral,neutral,15,B: finnews (substantive only)
+neutral,positive,5,B: finnews (substantive only)
+positive,negative,0,B: finnews (substantive only)
+positive,neutral,24,B: finnews (substantive only)
+positive,positive,21,B: finnews (substantive only)
+negative,negative,1,B: zeroshot (substantive only)
+negative,neutral,0,B: zeroshot (substantive only)
+negative,positive,2,B: zeroshot (substantive only)
+neutral,negative,1,B: zeroshot (substantive only)
+neutral,neutral,5,B: zeroshot (substantive only)
+neutral,positive,14,B: zeroshot (substantive only)
+positive,negative,1,B: zeroshot (substantive only)
+positive,neutral,3,B: zeroshot (substantive only)
+positive,positive,41,B: zeroshot (substantive only)

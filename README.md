@@ -272,8 +272,9 @@ like a source error; such cases stay flagged in `qa_discrepancies.csv`.
 ## NLP analysis: how Daily News covers natural gas
 
 *Work in progress. Tasks 1, 2 and 5 are done: corpus preparation, topic models,
-and the link to the energy series. Tone validation (Task 3) is waiting for hand
-labels, and the framing classifier (Task 4) follows it.*
+and the link to the energy series. Task 3 has round-1 hand labels and the
+validation of off-the-shelf tone models; the re-coding check for intra-coder
+reliability is still to come. The framing classifier (Task 4) is next.*
 
 The analysis asks three questions:
 
@@ -438,6 +439,46 @@ specific Hub commit.
   * **Data note.** The latest edition repeats the Sep-2022 value for Dec-2022.
     That value is kept as published and flagged, and results are repeated
     without it. 2022-Q2 is not reported.
+* **Validation against hand labels (Task 3)** (`sentiment_eval_*.csv`,
+  `sentiment_confusion.png`).
+  * **Labels.** The author hand-coded 150 articles using
+    `nlp/labels/CODEBOOK.md` (v4). The sample is stratified by year and by
+    whether the article is tagged as mentioning gas, and every estimate below is
+    reweighted to the corpus. The coder marked 66 of the 150 codes as unsure, so
+    every result is also given without those articles.
+  * **The gas-mention rule is validated.** Against the hand-coded `gas_mention`
+    labels it scores:
+    * accuracy 0.87 [0.81, 0.92], κ 0.79 [0.70, 0.87]
+    * 0.90 when reweighted to the corpus
+    * 0.96 (κ 0.94) on the articles the coder was sure about
+
+    Its main error is calling a listed mention "discussed": it finds 61% of the
+    hand-coded energy-mix lists and 3 of 5 resource lists. So it *understates*
+    the listed share and, if anything, makes the "discussed less" finding
+    conservative.
+  * **What the hand labels show directly** (weighted, 2022-Q3–2024 vs
+    2025–2026-Q3):
+    * The share of articles mentioning gas rose by **+8 points [+1, +15]**.
+    * The share of gas-mentioning articles that discuss gas fell from 78% to 72%
+      (−5 points [−24, +13]). That is the same direction as the rule-based result,
+      but 148 labels are too few to confirm it on their own.
+  * **No off-the-shelf model is good enough for tone toward gas.** On the 68
+    hand-coded substantive articles where the rule also finds gas sentences:
+
+    | Model | Accuracy | κ |
+    |---|---|---|
+    | Always "positive" (baseline) | 0.66 | 0 |
+    | VADER | 0.66 | 0.03 (predicts almost only positive) |
+    | Financial-news DistilRoBERTa | 0.53 (below the baseline) | 0.16 |
+    | DeBERTa zero-shot | 0.69 [0.57, 0.79] | **0.24 [0.03, 0.45]** |
+
+    The zero-shot model is the best, but it labels 14 of 20 hand-coded neutral
+    articles as positive. The end-to-end scores look better (zero-shot κ 0.59),
+    but that is mostly because the mention rule correctly picks out articles
+    that are not about gas.
+  * **The hand-coded tone of articles that discuss gas** (unweighted counts,
+    n = 74): 48 positive, 23 neutral, 3 negative. Negative coverage of gas is
+    almost absent from this outlet.
 
 ### Limitations
 
@@ -451,8 +492,12 @@ specific Hub commit.
   JNHPP keywords. Trends are shares *within* energy-keyword coverage, not shares of
   all news.
 * **Model choices.** The number of NMF topics cannot be identified from the data
-  (k is fixed and sensitivity-tested). BERTopic leaves 20% of articles as outliers.
+  (k is fixed and sensitivity-tested). BERTopic leaves 18% of articles as outliers.
   Topic labels are the author's.
+* **One coder.** The hand labels come from a single coder, who marked 44% of the
+  codes as unsure. The codebook gained rules T1c and T4a during round 1, and all
+  rows were rechecked against them. Intra-coder reliability (30 articles
+  re-coded after at least 14 days) is not yet measured.
 * **Descriptive only.** None of these results identify causal effects of coverage
   on gas use. The quarterly overlap with the gas data is short (2022-Q3 to
   2026-Q1), so the lead/lag analysis has little statistical power.

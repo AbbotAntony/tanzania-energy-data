@@ -92,3 +92,13 @@ def test_in_chunks_preserves_order_and_reports_progress():
     out = se._in_chunks(list(range(7)), 3, lambda c: [x * 10 for x in c], lambda i, n: seen.append((i, n)))
     assert out == [0, 10, 20, 30, 40, 50, 60]
     assert seen == [(3, 7), (6, 7), (7, 7)]
+
+
+def test_kappa_undefined_is_nan_and_skipped_in_bootstrap():
+    y = ["positive"] * 8 + ["neutral"]
+    p = ["positive"] * 9
+    s = ev.scores(["positive"] * 3, ["positive"] * 3, L)
+    assert np.isnan(s["kappa"])                                    # one shared label only
+    b = ev.bootstrap_scores(y, p, L, n_boot=200, seed=0).set_index("metric")
+    assert b.loc["kappa", "n_valid"] < 200                         # all-positive resamples dropped
+    assert b.loc["accuracy", "n_valid"] == 200

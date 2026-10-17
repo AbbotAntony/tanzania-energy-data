@@ -40,7 +40,7 @@ An article that mentions only these is coded `gas_mention = none` and
 |---|---|---|
 | `substantive` | At least one full sentence says something about gas itself: its supply, price, use, project progress or effects (rule T4). | "Natural gas production at Madimba more than doubled in 2023." |
 | `resource_list` | Gas appears **only** as an item in a list of the country's natural resources or assets (rule T1). | "endowed with minerals, natural gas, wildlife and fertile land" |
-| `energy_mix_list` | Gas appears **only** as an item in a list of energy sources or technologies (rule T1b), **or** in a list of projects, sectors, facilities, investment areas or traded commodities (rule T1c). | "investing in hydropower, natural gas and renewable energy"; "flagship projects such as the SGR, JNHPP and the LNG plant" |
+| `energy_mix_list` | Gas appears **only** as an item in a list of energy sources or technologies (rule T1b), **or** in a list of projects, sectors, facilities or investment areas (rule T1c). | "investing in hydropower, natural gas and renewable energy"; "flagship projects such as the SGR, JNHPP and the LNG plant" |
 | `none` | No natural gas mention, e.g. only LPG, oil or hydropower, **or** gas appears only inside the sector name "oil and gas" (rule T4a). | an EACOP article mentioning only crude oil; "investors in the oil and gas sector" |
 
 **Precedence when an article has several mentions:**
@@ -71,9 +71,8 @@ Judge the rest of that sentence. If nothing else is said about gas itself, code 
   `energy_mix_list`. The frame follows the article's energy content (see
   Variable 3).
 - **T1c, project/sector-list rule.** If gas appears only as an item in a list of
-  projects, sectors, facilities, investment areas or traded commodities (e.g. "the
-  SGR, JNHPP and the LNG project"; "oil, gold and natural gas" as traded
-  commodities), code `gas_mention` `energy_mix_list` and tone `not_about_gas`. Write
+  projects, sectors, facilities or investment areas (e.g. "the SGR, JNHPP and the
+  LNG project"), code `gas_mention` `energy_mix_list` and tone `not_about_gas`. Write
   `proj_list` in `notes` so these rows can be separated from true energy-mix lists in
   analysis. The frame follows the article's main content.
 - **T2, mixed tone.** Code the balance of the article. When it's genuinely even,
@@ -169,15 +168,19 @@ order is shuffled so that year and stratum are not visible from the row position
 
 - **Version 4 (round 1, October 2026).** Two rules were added while coding round 1,
   because cases arose that versions 1–3 did not cover:
-  - **T1c** (project, sector, facility, investment-area and commodity lists coded as
+  - **T1c** (project, sector, facility and investment-area lists coded as
     `energy_mix_list`, marked `proj_list` in notes). Affected rows: S014, S081, S084,
     S107, S115, S119, S120, S123, S147.
   - **T4a** ("oil and gas" sector name only coded as `none`). Affected rows: S046,
     S047, S085, S106, S133.
   All earlier rows were rechecked against both rules before import. In analysis,
   `energy_mix_list` is reported both with and without the `proj_list` rows.
-- **Exclusion.** S072 is a duplicate of S002 that deduplication missed. It is
-  excluded and replaced by a random draw from the same stratum (fixed seed), which is
-  coded blind.
+- **T1c narrowed (end of round 1).** Traded-commodity lists were removed from T1c;
+  the one such row, S048, stays coded `none`.
+- **Exclusions.** Four sampled articles turned out to be rewritten reposts that the
+  first deduplication pass missed: S072 (of S002), S016, S077 and S106 (of
+  non-sampled articles). Each was excluded and replaced by a random draw from the
+  same stratum (fixed seeds): S151–S154, coded blind. Sampling weights were
+  recomputed for the cleaned corpus.
 - **Version 3.** Rules T2a (factual outcomes) and T5 (comparison and displacement)
   added; publication date and URL removed from the labelling sheet for blind coding.

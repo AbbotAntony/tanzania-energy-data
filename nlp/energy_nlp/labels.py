@@ -168,7 +168,7 @@ CODEBOOK_SUMMARY = [
     ("gas_mention", "substantive", "At least one full sentence says something about gas itself (T4)."),
     ("gas_mention", "resource_list", "Gas only as an item in a list of national resources (T1)."),
     ("gas_mention", "energy_mix_list", "Gas only as an item in a list of energy sources (T1b), or of projects, "
-                                       "sectors, facilities, investment areas or traded commodities (T1c: write "
+                                       "sectors, facilities or investment areas (T1c: write "
                                        "proj_list in notes)."),
     ("gas_mention", "none", "No natural gas mention, or gas only inside the sector name 'oil and gas' (T4a)."),
     ("gas_tone", "positive", "Benefit/success/progress, incl. factual growth ('production doubled') (T2a)."),
