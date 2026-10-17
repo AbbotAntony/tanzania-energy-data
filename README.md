@@ -271,10 +271,9 @@ like a source error; such cases stay flagged in `qa_discrepancies.csv`.
 
 ## NLP analysis: how Daily News covers natural gas
 
-*Work in progress. Tasks 1, 2 and 5 are done: corpus preparation, topic models,
-and the link to the energy series. Task 3 has round-1 hand labels and the
-validation of off-the-shelf tone models; the re-coding check for intra-coder
-reliability is still to come. The framing classifier (Task 4) is next.*
+*Tasks 1–5 are done: corpus preparation, topic models, tone from validated hand
+labels, the supervised classifier, and the link to the energy series. Still to
+come: the intra-coder reliability check (30 articles re-coded after 14 days).*
 
 The analysis asks three questions:
 
@@ -282,7 +281,10 @@ The analysis asks three questions:
 2. Did coverage move from natural gas toward hydropower (JNHPP) around the 2024 fall
    in gas consumption? The question is whether coverage *tracks or anticipates* the
    gas-to-hydro shift, not whether it explains the drop.
-3. Is coverage of natural gas becoming more positive or more negative?
+3. What is the overall tone of natural gas coverage? This was first framed as "is
+   tone changing over time". It was narrowed because no automatic tone model
+   passed validation, and about 15 hand-coded gas articles per year are too few
+   to measure a trend. Yearly tone is therefore reported as descriptive only.
 
 All code is in `nlp/` and runs in its own environment, so the scraper environment
 stays light. Committed outputs contain ids, URLs, counts and model terms only.
@@ -297,6 +299,11 @@ nlp\.venv\Scripts\python.exe nlp\scripts\01b_near_duplicates.py  # rewritten rep
 nlp\.venv\Scripts\python.exe nlp\scripts\02_topics_nmf.py       # NMF baseline (~9 min k-sweep)
 nlp\.venv\Scripts\python.exe nlp\scripts\02b_topics_bertopic.py # BERTopic + comparison
 nlp\.venv\Scripts\python.exe nlp\scripts\02c_gas_mentions.py    # gas discussed vs listed
+nlp\.venv\Scripts\python.exe nlp\scripts\03a_labels.py sheet     # blind labelling workbook (then: import, recode-sheet)
+nlp\.venv\Scripts\python.exe nlp\scripts\03b_sentiment_predict.py # off-the-shelf tone models (~15 min on CPU)
+nlp\.venv\Scripts\python.exe nlp\scripts\03c_sentiment_eval.py   # validate against hand labels
+nlp\.venv\Scripts\python.exe nlp\scripts\03d_tone_overall.py     # RQ3: weighted tone from hand labels
+nlp\.venv\Scripts\python.exe nlp\scripts\04_classifier.py        # TF-IDF + logistic regression, repeated CV
 nlp\.venv\Scripts\python.exe nlp\scripts\05_link_energy.py      # coverage vs BoT gas consumption
 cd nlp; .venv\Scripts\python.exe -m pytest                        # tests
 ```
@@ -462,8 +469,14 @@ specific Hub commit.
     * The share of gas-mentioning articles that discuss gas fell from 78% to 72%
       (−5 points [−24, +13]). That is the same direction as the rule-based result,
       but 148 labels are too few to confirm it on their own.
-  * **No off-the-shelf model is good enough for tone toward gas.** On the 68
-    hand-coded substantive articles where the rule also finds gas sentences:
+  * **Methodological finding: off-the-shelf sentiment models failed validation.**
+    Three widely used models were tested against the hand labels for tone toward
+    gas: a lexicon (VADER), a news-trained transformer, and a zero-shot NLI
+    model asked directly about natural gas. None separates positive from neutral
+    coverage reliably. Used without validation, they would have put the positive
+    share anywhere between 21% and 47% of all articles, depending on the model
+    chosen. On the 68 hand-coded substantive articles where the rule also finds
+    gas sentences:
 
     | Model | Accuracy | κ |
     |---|---|---|
@@ -476,9 +489,52 @@ specific Hub commit.
     articles as positive. The end-to-end scores look better (zero-shot κ 0.59),
     but that is mostly because the mention rule correctly picks out articles
     that are not about gas.
-  * **The hand-coded tone of articles that discuss gas** (unweighted counts,
-    n = 74): 48 positive, 23 neutral, 3 negative. Negative coverage of gas is
-    almost absent from this outlet.
+* **RQ3: overall tone of gas coverage** (`tone_overall.csv`, `tone_by_year.csv`,
+  `tone_overall.png`; script `03d_tone_overall.py`). These figures come from the
+  hand labels, weighted to the corpus. The 95% intervals come from a bootstrap
+  that resamples articles within each sampling stratum.
+
+  Among articles that discuss gas (74 coded):
+
+  | Tone | Share | 95% CI | Coded articles |
+  |---|---|---|---|
+  | positive | **64%** | 53–76% | 48 |
+  | neutral | **32%** | 20–43% | 23 |
+  | negative | **4%** | 0–10% | 3 |
+
+  * Coverage of gas is predominantly positive, and **negative coverage is almost
+    absent**. This is consistent with a government-owned outlet, and with
+    codebook rule T2a, which counts factual reports of progress as positive.
+  * Counting only the codes the coder was sure about (31 articles) gives 81%
+    positive, 19% neutral and 0% negative.
+  * **By year (descriptive only).** The positive share of positive + neutral
+    articles ranges from 58% to 73% between 2022 and 2026. With 11–18 coded
+    articles per year, every interval spans roughly 30–100 percentage points, so
+    no trend can be detected. The sure-only yearly figures (4–8 articles per
+    year) are too small to interpret.
+* **Supervised classifier (Task 4)** (`classifier_*.csv`, `classifier_cv.png`;
+  script `04_classifier.py`). This is TF-IDF + logistic regression with balanced
+  class weights. The regularisation strength C is tuned inside each training
+  fold.
+  * **Evaluation.** 5-fold stratified cross-validation repeated 10 times
+    (50 folds), compared with a majority-class baseline. Differences use the
+    Nadeau–Bengio corrected resampled t-test, which allows for overlapping
+    training sets. There is no separate held-out test set, because with about
+    70 tone labels it would leave too little data for training.
+
+    | Task | n | Model accuracy | Baseline accuracy | Model κ | Model − baseline (95% CI) |
+    |---|---|---|---|---|---|
+    | Frame (8 classes) | 150 | 0.57 | 0.26 | 0.48 | accuracy +0.31 [0.22, 0.40], p < 0.001 |
+    | Tone: positive vs neutral | 71 | 0.65 | 0.68 | 0.08 | macro-F1 +0.10 [−0.03, 0.23], p = 0.11 |
+
+  * **Framing is partly learnable.** Per-class F1 is 0.68 for economic
+    opportunity, 0.60 for environment and climate, and 0.57 for supply and
+    reliability. Resource wealth, with only 5 examples, is never predicted
+    correctly.
+  * **Positive vs neutral tone is not learnable from 71 labels.** The model
+    finds only 20% of the neutral articles and does not beat the baseline. The
+    untrained zero-shot model scores κ 0.23 on the same articles. Measuring tone
+    automatically would need more hand-coded data, or a different approach.
 
 ### Limitations
 

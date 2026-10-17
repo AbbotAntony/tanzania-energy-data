@@ -1,0 +1,11 @@
+sample,year,positive_share,lo,hi,n
+all labels,2022,0.6316,0.3889,0.8421,18
+all labels,2023,0.7333,0.5,0.9333,15
+all labels,2024,0.6472,0.3601,1.0,11
+all labels,2025,0.7333,0.5,0.9333,15
+all labels,2026,0.5833,0.3,0.8571,12
+excluding unsure,2022,1.0,1.0,1.0,8
+excluding unsure,2023,0.7143,0.3333,1.0,7
+excluding unsure,2024,0.5435,0.2058,1.0,6
+excluding unsure,2025,0.8333,0.5,1.0,6
+excluding unsure,2026,1.0,1.0,1.0,4

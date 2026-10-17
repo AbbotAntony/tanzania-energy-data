@@ -1,0 +1,7 @@
+sample,tone,share,lo,hi,n_coded,n_gas_discussing
+all labels,positive,0.6422,0.529,0.7649,48,74
+all labels,neutral,0.319,0.2022,0.4341,23,74
+all labels,negative,0.0387,0.0,0.0956,3,74
+excluding unsure,positive,0.8071,0.6456,0.9545,26,31
+excluding unsure,neutral,0.1929,0.0455,0.3544,5,31
+excluding unsure,negative,0.0,0.0,0.0,0,31
