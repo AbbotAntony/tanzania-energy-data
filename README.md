@@ -379,17 +379,11 @@ specific Hub commit.
 * **Coverage and the gas-to-hydro shift** (`link_*.csv`, `link_gas_jnhpp.png`).
   This compares quarterly coverage with BoT/TPDC quarterly gas consumption
   (latest editions). It is descriptive only.
-  * **The size of the drop depends on the series and basis:**
-
-    | Series | Basis | Change |
-    |---|---|---|
-    | BoT/TPDC total gas consumption | calendar year, 2023 → 2024 | **−19.0%** |
-    | BoT/TPDC gas for power | calendar year, 2023 → 2024 | −23.1% |
-    | BoT/TPDC total gas consumption | fiscal year, 2023/24 → 2024/25 | −25.5% |
-    | GASCO throughput (author's data) | calendar year, 2023 → 2024 | −14.5% |
-
-    The series differ in coverage and basis, so they should not be compared as
-    if they measured the same thing.
+  * **The 2024 drop.** GASCO throughput (author's data) fell **14.5%** between
+    calendar years 2023 and 2024, from 49,148 to about 42,017 MMscf. BoT/TPDC
+    data support this, showing a fall of 19.0% in total gas consumption and
+    23.1% in gas for power over the same calendar years. The two sources differ
+    in coverage and definitions, so their percentages are not expected to match.
   * **Timing.** Gas for power first falls below its 2023 range in 2024-Q2, and
     the largest quarterly fall is in 2024-Q3. This follows the first JNHPP
     turbines: turbine 9 in February 2024, and three turbines (705 MW) by July
