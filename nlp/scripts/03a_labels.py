@@ -6,7 +6,8 @@ From the repo root:
   nlp/.venv/Scripts/python nlp/scripts/03a_labels.py recode-sheet    # >= 14 days later: 30-article sheet
   nlp/.venv/Scripts/python nlp/scripts/03a_labels.py import --round 2
 
-Sheets (with article text) go to data/nlp/ and are never committed. The label
+Sheets are Excel workbooks (dropdowns with the valid codes, a Codebook tab) in
+data/nlp/, which is never committed. The label
 files in nlp/labels/ hold sample ids and codes only.
 """
 
@@ -27,7 +28,7 @@ from energy_nlp import prep  # noqa: E402
 
 LABEL_DIR = NLP_DIR / "labels"
 DESIGN = LABEL_DIR / "sample_design.csv"
-SHEETS = {1: DATA_DIR / "labelling_sheet.csv", 2: DATA_DIR / "recode_sheet.csv"}
+SHEETS = {1: DATA_DIR / "labelling_sheet.xlsx", 2: DATA_DIR / "recode_sheet.xlsx"}
 OUTPUT = {1: LABEL_DIR / "labels_round1.csv", 2: LABEL_DIR / "labels_round2.csv"}
 MIN_DAYS_BETWEEN = 14
 
@@ -35,11 +36,17 @@ MIN_DAYS_BETWEEN = 14
 def cmd_sheet(force: bool) -> None:
     corpus = prep.load_corpus(DATA_DIR / "corpus.csv")
     sample = lb.draw_sample(corpus, seed=SEED)
+    design = lb.design_table(sample)
+    if DESIGN.exists():
+        # The committed design is the record of what was sampled; the sheet must match it.
+        old = pd.read_csv(DESIGN)
+        if old["post_id"].tolist() != design["post_id"].tolist() or                 old["sample_id"].tolist() != design["sample_id"].tolist():
+            sys.exit(f"the sample drawn now differs from {DESIGN} - corpus changed? Not writing a sheet.")
     try:
-        lb.write_sheet(lb.blind_sheet(sample), SHEETS[1], force=force)
+        lb.write_xlsx(lb.blind_sheet(sample), SHEETS[1], force=force)
     except FileExistsError as e:
         sys.exit(str(e))
-    lb.design_table(sample).to_csv(DESIGN, index=False)
+    design.to_csv(DESIGN, index=False)
     print(f"{len(sample)} articles -> {SHEETS[1]}")
     print(sample.groupby("stratum").agg(N_h=("N_h", "first"), n_h=("n_h", "first"),
                                         weight=("weight", "first")).to_string())
@@ -77,7 +84,7 @@ def cmd_recode_sheet(force: bool) -> None:
     sample = design.merge(corpus[["post_id", "title", "text"]], on="post_id")
     sheet = lb.blind_sheet(sample.set_index("sample_id").loc[ids].reset_index())
     try:
-        lb.write_sheet(sheet, SHEETS[2], force=force)
+        lb.write_xlsx(sheet, SHEETS[2], force=force)
     except FileExistsError as e:
         sys.exit(str(e))
     print(f"{len(sheet)} articles -> {SHEETS[2]}  (do not look at your round-1 codes first)")

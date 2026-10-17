@@ -103,3 +103,49 @@ def test_validate_flags_each_rule():
     p = lb.validate(bad)
     assert p.groupby("sample_id")["variable"].apply(list).to_dict() == {
         "S1": ["gas_mention"], "S2": ["gas_tone"], "S3": ["gas_tone"], "S4": ["gas_tone"], "S5": ["frame"]}
+
+
+def test_write_xlsx_dropdowns_freeze_and_round_trip(tmp_path):
+    from openpyxl import load_workbook
+
+    sheet = lb.blind_sheet(lb.draw_sample(_corpus()))
+    sheet.loc[0, "text"] = "Gas\u2019s \u201crise\u201d \u2013 " + "word " * 3000      # long, typographic
+    path = tmp_path / "s.xlsx"
+    lb.write_xlsx(sheet, path)
+    wb = load_workbook(path)
+    ws = wb["Labels"]
+    assert ws.freeze_panes == "A2"
+    assert [c.value for c in ws[1]] == ["sample_id", "title", "text", "gas_mention", "gas_tone", "frame",
+                                        "unsure", "notes"]
+    lists = {str(dv.sqref).split(":")[0][0]: dv.formula1 for dv in ws.data_validations.dataValidation}
+    assert lists["D"] == '"substantive,resource_list,energy_mix_list,none"'
+    assert lists["E"] == '"positive,neutral,negative,not_about_gas"'
+    assert "resource_wealth" in lists["F"] and lists["G"] == '"x"'
+    assert ws["C2"].alignment.wrap_text
+    assert "Codebook" in wb.sheetnames
+    with pytest.raises(FileExistsError):
+        lb.write_xlsx(sheet, path)
+
+
+def test_write_xlsx_refuses_text_over_cell_limit(tmp_path):
+    sheet = lb.blind_sheet(lb.draw_sample(_corpus()))
+    sheet.loc[3, "text"] = "x" * (lb.EXCEL_CELL_LIMIT + 1)
+    with pytest.raises(ValueError, match=sheet.loc[3, "sample_id"]):
+        lb.write_xlsx(sheet, tmp_path / "s.xlsx")
+
+
+def test_read_sheet_from_xlsx(tmp_path):
+    from openpyxl import load_workbook
+
+    sheet = lb.blind_sheet(lb.draw_sample(_corpus()))
+    path = tmp_path / "s.xlsx"
+    lb.write_xlsx(sheet, path)
+    wb = load_workbook(path)
+    ws = wb["Labels"]
+    ws["D2"], ws["E2"], ws["F2"], ws["G2"], ws["H2"] = "substantive", "positive", "prices_costs", "x", "check"
+    wb.save(path)
+    out = lb.read_sheet(path)
+    first = out.iloc[0]
+    assert (first["gas_mention"], first["gas_tone"], first["frame"], first["unsure"], first["notes"]) == \
+        ("substantive", "positive", "prices_costs", True, "check")
+    assert out["unsure"].sum() == 1 and (out["gas_mention"] == "").sum() == len(out) - 1

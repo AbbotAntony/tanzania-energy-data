@@ -140,9 +140,11 @@ order is shuffled so that year and stratum are not visible from the row position
 
 ## Files
 
-- `data/nlp/labelling_sheet.csv` (**not committed**, it holds article text):
-  `sample_id, title, text`, plus blank columns `gas_mention, gas_tone, frame,
-  unsure, notes`. For blind coding, the post id, publication date, URL, stratum
+- `data/nlp/labelling_sheet.xlsx` (**not committed**, it holds article text):
+  a *Labels* tab with `sample_id, title, text`, plus blank columns `gas_mention,
+  gas_tone, frame, unsure, notes`, where the codes and `unsure` (`x`) are
+  dropdowns that accept only valid values. A *Codebook* tab summarises this
+  manual. For blind coding, the post id, publication date, URL, stratum
   and weight are kept only in `sample_design.csv`. Dates mentioned *inside* the
   text cannot be hidden.
 - `nlp/labels/sample_design.csv` (committed): `sample_id, post_id, pub_date, url,
