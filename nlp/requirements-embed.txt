@@ -16,3 +16,6 @@ hdbscan==0.8.44
 numba==0.68.0
 llvmlite==0.50.0
 pynndescent==0.6.0
+# Tone models (Task 3) are downloaded from the Hub on first use, pinned in energy_nlp/sentiment.py:
+#   mrm8488/distilroberta-finetuned-financial-news-sentiment-analysis  (~328 MB, Apache-2.0)
+#   MoritzLaurer/deberta-v3-base-zeroshot-v2.0                         (~369 MB, MIT)
