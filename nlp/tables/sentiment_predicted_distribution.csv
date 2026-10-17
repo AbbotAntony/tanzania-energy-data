@@ -1,5 +1,0 @@
-predicted_tone,vader,finnews,zeroshot
-negative,0.012,0.007,0.015
-neutral,0.003,0.239,0.111
-not_about_gas,0.56,0.56,0.56
-positive,0.425,0.194,0.315

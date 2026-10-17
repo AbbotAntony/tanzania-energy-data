@@ -1,7 +1,0 @@
-measure,NMF (k=17),BERTopic
-topics,17.0,19.0
-articles without a topic (outliers),0.0,0.182
-coherence: mean NPMI of top-10 terms,0.42,0.34
-topic diversity (unique top-10 terms),0.959,0.937
-stability: mean AMI vs 4 other seeds,0.732,0.772
-agreement NMF vs BERTopic: AMI (non-outliers),0.587,0.587

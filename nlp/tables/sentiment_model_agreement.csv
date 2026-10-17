@@ -1,4 +1,0 @@
-model_a,model_b,kappa,raw_agreement
-vader,finnews,-0.001,0.43
-vader,zeroshot,0.077,0.717
-finnews,zeroshot,0.307,0.621
