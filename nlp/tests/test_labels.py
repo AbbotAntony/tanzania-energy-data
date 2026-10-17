@@ -149,3 +149,66 @@ def test_read_sheet_from_xlsx(tmp_path):
     assert (first["gas_mention"], first["gas_tone"], first["frame"], first["unsure"], first["notes"]) == \
         ("substantive", "positive", "prices_costs", True, "check")
     assert out["unsure"].sum() == 1 and (out["gas_mention"] == "").sum() == len(out) - 1
+
+
+def _design_and_corpus():
+    c = _corpus()
+    return lb.design_table(lb.draw_sample(c)), c
+
+
+def test_draw_replacement_same_stratum_unsampled_and_reproducible():
+    design, c = _design_and_corpus()
+    target = design[design["stratum"] == "2023_gas"].iloc[0]["sample_id"]
+    out = lb.draw_replacement(design, c, target, "duplicate_of:S001")
+    again = lb.draw_replacement(design, c, target, "duplicate_of:S001")
+    pd.testing.assert_frame_equal(out, again)
+    new = out.iloc[-1]
+    assert new["sample_id"] == f"S{len(design) + 1:03d}" and new["replaces"] == target
+    assert new["stratum"] == "2023_gas" and new["status"] == "active"
+    assert new["post_id"] not in set(design["post_id"])
+    old = out.set_index("sample_id").loc[target]
+    assert (old["status"], old["reason"]) == ("excluded", "duplicate_of:S001")
+    assert out["post_id"].is_unique
+
+
+def test_second_replacement_uses_next_seed_and_never_reuses():
+    design, c = _design_and_corpus()
+    ids = design.loc[design["stratum"] == "2023_gas", "sample_id"].tolist()   # 40 articles, 20 sampled
+    first = lb.draw_replacement(design, c, ids[0], "x")
+    second = lb.draw_replacement(first, c, ids[1], "y")
+    assert second["post_id"].is_unique and len(second) == len(design) + 2
+    assert second.iloc[-1]["post_id"] != first.iloc[-1]["post_id"]
+    with pytest.raises(ValueError):                       # already excluded
+        lb.draw_replacement(second, c, ids[0], "again")
+
+
+def test_draw_replacement_fails_when_stratum_exhausted():
+    design, c = _design_and_corpus()
+    target = design[design["stratum"] == "2024_other"].iloc[0]["sample_id"]   # all 9 already sampled
+    with pytest.raises(ValueError, match="no unsampled"):
+        lb.draw_replacement(design, c, target, "x")
+
+
+def test_recode_draws_only_active_rows():
+    design, c = _design_and_corpus()
+    out = lb.draw_replacement(design, c, "S001", "x")
+    assert "S001" not in lb.draw_recode(out, n=len(design), seed=1)
+
+
+def test_append_to_xlsx_keeps_existing_cells_and_extends_dropdowns(tmp_path):
+    from openpyxl import load_workbook
+
+    sheet = lb.blind_sheet(lb.draw_sample(_corpus()))
+    path = tmp_path / "s.xlsx"
+    lb.write_xlsx(sheet, path)
+    wb = load_workbook(path)
+    wb["Labels"]["D2"], wb["Labels"]["H2"] = "substantive", "my note"
+    wb.save(path)
+    lb.append_to_xlsx(path, pd.DataFrame([{"sample_id": "S999", "title": "New", "text": "New text"}]))
+    ws = load_workbook(path)["Labels"]
+    last = ws.max_row
+    assert last == len(sheet) + 2
+    assert (ws["D2"].value, ws["H2"].value) == ("substantive", "my note")      # coder's work untouched
+    assert [ws.cell(last, j).value for j in (1, 2, 3, 4)] == ["S999", "New", "New text", None]
+    assert all(str(dv.sqref).endswith(str(last)) for dv in ws.data_validations.dataValidation)
+    assert ws.cell(last, 3).alignment.wrap_text

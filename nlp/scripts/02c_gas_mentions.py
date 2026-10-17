@@ -25,17 +25,19 @@ from energy_nlp.plotting import BLUE, INK, ORANGE, SURFACE, AQUA, style, year_ti
 ERA_A, ERA_B = "2022Q3-2024Q4", "2025Q1-2026Q3"
 ERA_EDGES = (pd.Period("2024Q4", "Q"), pd.Period("2026Q3", "Q"))
 N_BOOT = 1000
-KINDS = ["substantive", "energy_mix_list", "resource_list"]
+# Detailed kinds: project/sector lists (codebook T1c, coded energy_mix_list) are kept apart.
+KINDS = ["substantive", "energy_mix_list", "project_list", "resource_list"]
 KIND_LABEL = {"substantive": "gas discussed", "energy_mix_list": "only in energy-mix lists",
-              "resource_list": "only in resource lists", "none": "no gas mention"}
+              "project_list": "only in project/sector lists", "resource_list": "only in resource lists",
+              "none": "no gas mention"}
 
 
 def plot(quarterly: pd.DataFrame, path: Path) -> None:
     fig, ax = plt.subplots(figsize=(8, 3.8))
     x = quarterly["quarter"].dt.start_time + pd.Timedelta(days=45)
-    listed = quarterly["energy_mix_list"] + quarterly["resource_list"]
+    listed = quarterly["energy_mix_list"] + quarterly["project_list"] + quarterly["resource_list"]
     for y, colour, label in [(quarterly["substantive"], BLUE, "gas discussed (≥1 sentence about gas)"),
-                             (listed, ORANGE, "gas only listed (energy-mix or resource lists)"),
+                             (listed, ORANGE, "gas only listed (energy-mix, project or resource lists)"),
                              (quarterly["resource_list"], AQUA, "  of which resource lists")]:
         ax.plot(x, y, color=colour, linewidth=2, label=label)
         ax.scatter(x, y, s=12, color=colour, zorder=3)
@@ -54,7 +56,7 @@ def plot(quarterly: pd.DataFrame, path: Path) -> None:
 def main() -> None:
     d = prep.load_corpus(DATA_DIR / "corpus.csv")
     texts = d["title"] + ". " + d["text"]
-    d["gas_mention"] = texts.map(mn.article_mention)
+    d["gas_mention"] = texts.map(lambda t: mn.article_mention(t, detail=True))
     q = d["quarter"]
     eras = pd.Series(np.select([q <= ERA_EDGES[0], q <= ERA_EDGES[1]], [ERA_A, ERA_B], "partial"))
     d[["post_id", "gas_mention"]].to_csv(DATA_DIR / "gas_mention_rule.csv", index=False)

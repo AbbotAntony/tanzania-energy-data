@@ -5,6 +5,7 @@ From the repo root:
   nlp/.venv/Scripts/python nlp/scripts/03a_labels.py import          # check + save round-1 labels
   nlp/.venv/Scripts/python nlp/scripts/03a_labels.py recode-sheet    # >= 14 days later: 30-article sheet
   nlp/.venv/Scripts/python nlp/scripts/03a_labels.py import --round 2
+  nlp/.venv/Scripts/python nlp/scripts/03a_labels.py replace S072 --reason duplicate_of:S002
 
 Sheets are Excel workbooks (dropdowns with the valid codes, a Codebook tab) in
 data/nlp/, which is never committed. The label
@@ -15,7 +16,8 @@ from __future__ import annotations
 
 import argparse
 import sys
-from datetime import date
+import shutil
+from datetime import date, datetime
 from pathlib import Path
 
 sys.path[:0] = [str(Path(__file__).resolve().parents[2]), str(Path(__file__).resolve().parents[1])]
@@ -39,8 +41,10 @@ def cmd_sheet(force: bool) -> None:
     design = lb.design_table(sample)
     if DESIGN.exists():
         # The committed design is the record of what was sampled; the sheet must match it.
-        old = pd.read_csv(DESIGN)
-        if old["post_id"].tolist() != design["post_id"].tolist() or                 old["sample_id"].tolist() != design["sample_id"].tolist():
+        old = lb.ensure_status(pd.read_csv(DESIGN))
+        old = old[old["replaces"] == ""]                    # the original draw, before replacements
+        if old["post_id"].tolist() != design["post_id"].tolist() or \
+                old["sample_id"].tolist() != design["sample_id"].tolist():
             sys.exit(f"the sample drawn now differs from {DESIGN} - corpus changed? Not writing a sheet.")
     try:
         lb.write_xlsx(lb.blind_sheet(sample), SHEETS[1], force=force)
@@ -54,12 +58,21 @@ def cmd_sheet(force: bool) -> None:
 
 def cmd_import(round_: int) -> None:
     labels = lb.read_sheet(SHEETS[round_])
+    design = lb.ensure_status(pd.read_csv(DESIGN))
+    excluded = design.loc[design["status"] != "active", "sample_id"]
+    dropped = labels["sample_id"].isin(excluded)
+    if dropped.any():
+        print(f"ignoring excluded rows: {', '.join(labels.loc[dropped, 'sample_id'])}")
+    labels = labels[~dropped]
+    if round_ == 1:
+        missing = sorted(set(design.loc[design["status"] == "active", "sample_id"]) - set(labels["sample_id"]))
+        if missing:
+            sys.exit(f"active sample rows missing from the sheet: {missing}")
     problems = lb.validate(labels)
     if not problems.empty:
         print(f"{len(problems)} problem(s) - fix them in {SHEETS[round_]} and run import again:")
         print(problems.to_string(index=False))
         sys.exit(1)
-    design = pd.read_csv(DESIGN)
     out = labels.merge(design[["sample_id", "post_id"]], on="sample_id", how="left")
     if out["post_id"].isna().any():
         sys.exit(f"unknown sample_ids: {out.loc[out['post_id'].isna(), 'sample_id'].tolist()}")
@@ -90,6 +103,30 @@ def cmd_recode_sheet(force: bool) -> None:
     print(f"{len(sheet)} articles -> {SHEETS[2]}  (do not look at your round-1 codes first)")
 
 
+def cmd_replace(sample_id: str, reason: str) -> None:
+    """Exclude a sample row and add a blind replacement from the same stratum."""
+    design = pd.read_csv(DESIGN)
+    corpus = prep.load_corpus(DATA_DIR / "corpus.csv")
+    try:
+        new_design = lb.draw_replacement(design, corpus, sample_id, reason)
+    except ValueError as e:
+        sys.exit(str(e))
+    new = new_design.iloc[-1]
+    article = corpus.set_index("post_id").loc[new["post_id"]]
+    backup = SHEETS[1].with_name(f"{SHEETS[1].stem}.backup-{datetime.now():%Y%m%d-%H%M%S}{SHEETS[1].suffix}")
+    shutil.copy2(SHEETS[1], backup)
+    lb.append_to_xlsx(SHEETS[1], pd.DataFrame([{"sample_id": new["sample_id"], "title": article["title"],
+                                                "text": article["text"]}]))
+    check = lb.read_sheet(SHEETS[1])
+    if check["sample_id"].iloc[-1] != new["sample_id"] or \
+            pd.read_excel(SHEETS[1], sheet_name="Labels")["text"].iloc[-1] != article["text"]:
+        shutil.copy2(backup, SHEETS[1])
+        sys.exit("workbook check failed - restored the backup, nothing changed")
+    new_design.to_csv(DESIGN, index=False)
+    print(f"{sample_id} excluded ({reason}); replacement {new['sample_id']} added to {SHEETS[1].name} "
+          f"(backup: {backup.name})")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -99,11 +136,16 @@ def main() -> None:
     i.add_argument("--round", type=int, choices=(1, 2), default=1)
     r = sub.add_parser("recode-sheet")
     r.add_argument("--force", action="store_true")
+    x = sub.add_parser("replace", help="exclude a sample row and add a blind replacement")
+    x.add_argument("sample_id")
+    x.add_argument("--reason", required=True)
     args = ap.parse_args()
     if args.cmd == "sheet":
         cmd_sheet(args.force)
     elif args.cmd == "import":
         cmd_import(args.round)
+    elif args.cmd == "replace":
+        cmd_replace(args.sample_id, args.reason)
     else:
         cmd_recode_sheet(args.force)
 

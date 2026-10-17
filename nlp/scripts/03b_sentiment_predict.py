@@ -4,7 +4,8 @@ Run from the repo root:  nlp/.venv/Scripts/python -u nlp/scripts/03b_sentiment_p
   --bench N   time each model on the first N articles only (nothing saved)
 
 Each model's per-article output is saved to data/nlp/sentiment_<model>.csv as
-soon as it finishes; a re-run skips models already saved for the same articles.
+soon as it finishes; a re-run skips a model only if every article's input
+sentences are unchanged (checked by hash).
 The merged file data/nlp/sentiment_predictions.csv is not committed and not
 shown while hand-labelling is under way. Only aggregates are printed.
 
@@ -15,6 +16,7 @@ On a 4-core laptop CPU (i5-8250U) the zero-shot model dominates the run time
 from __future__ import annotations
 
 import argparse
+import hashlib
 import sys
 import time
 import warnings
@@ -59,6 +61,8 @@ def main() -> None:
     has = base["n_gas_sentences"] > 0
     ids = base.loc[has, "post_id"].tolist()
     docs = [s for s, h in zip(sents, has) if h]
+    # Cache key: the exact sentences each model sees (they change with the mention rule).
+    shas = [hashlib.sha1("\n".join(s).encode()).hexdigest()[:16] for s in docs]
 
     if args.bench:
         docs = docs[:args.bench]
@@ -75,14 +79,16 @@ def main() -> None:
     out = base
     for name, fn in MODELS.items():
         path = DATA_DIR / f"sentiment_{name}.csv"
-        if path.exists() and pd.read_csv(path)["post_id"].tolist() == ids:
-            print(f"{name}: already done, loading {path.name}", flush=True)
-            res = pd.read_csv(path)
+        cached = pd.read_csv(path) if path.exists() else None
+        if cached is not None and "input_sha" in cached and cached["post_id"].tolist() == ids \
+                and cached["input_sha"].tolist() == shas:
+            print(f"{name}: inputs unchanged, loading {path.name}", flush=True)
+            res = cached.drop(columns="input_sha")
         else:
             t0 = time.time()
             res = pd.DataFrame(fn(docs, progress=progress_printer(name))).add_prefix(f"{name}_")
             res.insert(0, "post_id", ids)
-            res.round(4).to_csv(path, index=False)
+            res.assign(input_sha=shas).round(4).to_csv(path, index=False)
             print(f"{name}: done in {(time.time() - t0) / 60:.1f} min", flush=True)
         out = out.merge(res, on="post_id", how="left")
         # End-to-end 4-class prediction: the rule decides "about gas", the model the tone.

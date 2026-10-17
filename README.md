@@ -342,14 +342,22 @@ specific Hub commit.
   | Stability (AMI of assignments across 5 seeds) | 0.68 | 0.80 |
   | Agreement between the models (AMI) | 0.60 | |
 
-* **How gas is mentioned.** A rule-based classifier (`energy_nlp/mentions.py`) labels
-  each gas mention in one of three ways:
+* **How gas is mentioned.** A rule-based classifier (`energy_nlp/mentions.py`,
+  rule version 2, following codebook v4) labels each gas mention as one of:
   * *discussed*: a sentence says something about gas itself
-  * *in an energy-mix list*: "hydropower, natural gas and solar"
-  * *in a resource list*: "minerals, natural gas and wildlife"
+  * *in an energy-mix list*: "hydropower, natural gas and solar" (rule T1b)
+  * *in a project or sector list*: "projects in energy, natural gas and roads"
+    (rule T1c)
+  * *in a resource list*: "minerals, natural gas and wildlife" (rule T1)
 
-  **It is indicative until validated** against hand labels coded with
-  `nlp/labels/CODEBOOK.md`.
+  In the codebook, `energy_mix_list` covers **both** energy-mix lists and
+  project/sector lists (T1c). The coder marks the project/sector rows `proj_list`
+  in the notes, so results can be reported with and without them. "Oil and
+  natural gas sector" is a sector name, not a mention of gas (T4a).
+
+  The rule was built from the codebook and from articles outside the labelled
+  sample, not from the labels. **It is indicative until validated** against the
+  hand labels.
 
 ### Findings so far (descriptive)
 
@@ -357,12 +365,20 @@ specific Hub commit.
   * The share of articles that mention natural gas rose from **52% (2022-Q3 to
     2024-Q4) to 62% (2025-Q1 to 2026-Q3)**.
   * Among gas-mentioning articles, the share that actually discuss gas fell from
-    **90% to 81%** (−9.4 points, 95% CI −14.6 to −4.0). This uses the rule-based
+    **84% to 73%** (−11.5 points, 95% CI −17.7 to −5.1). This uses the rule-based
     classifier, so it is indicative until validated.
-  * About two-thirds of the rise is articles where gas appears only in lists:
-    energy-mix lists +4.2 points [1.7, 6.7], resource-wealth lists +2.7 [0.7, 4.8].
-    The rise in articles that discuss gas, +3.4 [−2.5, 9.2], cannot be told apart
-    from zero.
+  * **About 85% of the rise** (8.7 of 10.3 points) is articles where gas appears
+    only in lists:
+    * energy-mix lists +4.6 points [1.9, 7.2]
+    * resource-wealth lists +2.8 [0.7, 5.0]
+    * project/sector lists +1.3 [−0.9, 3.3]
+
+    Without the project/sector lists, list-only mentions still account for 72% of
+    the rise. The rise in articles that discuss gas, +1.6 [−4.2, 7.3], cannot be
+    told apart from zero.
+  * Adding project/sector lists to the rule (codebook v4) **strengthens** this
+    finding. Under the earlier rule (v1), the drop was 90% → 81% (−9.4 points),
+    and lists accounted for about two-thirds of the rise.
 * **The rise is not gas-sector news.** In both models the gas-sector topics stay flat
   or fall: LNG, CNG and gas fields. The increase comes from general economic and
   development coverage.

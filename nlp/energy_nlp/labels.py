@@ -58,10 +58,80 @@ def blind_sheet(sample: pd.DataFrame) -> pd.DataFrame:
     return sheet
 
 
+REPLACEMENT_SEED_BASE = 4200     # k-th replacement uses seed 4200 + k
+
+
+def ensure_status(design: pd.DataFrame) -> pd.DataFrame:
+    """Add the status/reason/replaces columns used once rows are excluded or replaced."""
+    d = design.copy()
+    for col, default in (("status", "active"), ("reason", ""), ("replaces", "")):
+        if col not in d.columns:
+            d[col] = default
+        d[col] = d[col].fillna(default if col == "status" else "")
+    return d
+
+
+def draw_replacement(design: pd.DataFrame, corpus: pd.DataFrame, sample_id: str, reason: str) -> pd.DataFrame:
+    """Exclude ``sample_id`` and draw a replacement from the same stratum.
+
+    The replacement is a random article from the stratum (year x gas-tagged) that
+    has never been in the sample, drawn with seed REPLACEMENT_SEED_BASE + k where
+    k counts earlier replacements. Returns the updated design with the new row
+    appended (next free sample_id, same stratum weight).
+    """
+    d = ensure_status(design)
+    row = d.loc[d["sample_id"] == sample_id]
+    if row.empty or row["status"].iloc[0] != "active":
+        raise ValueError(f"{sample_id} is not an active sample row")
+    row = row.iloc[0]
+    k = int((d["replaces"] != "").sum())
+    years = corpus["pub_date"].dt.year
+    gas = corpus["topics"].str.split(";").map(lambda t: "natural_gas" in t)
+    pool = corpus[(years == row["year"]) & (gas == bool(row["gas_tagged"]))
+                  & ~corpus["post_id"].isin(d["post_id"])].sort_values("post_id")
+    if pool.empty:
+        raise ValueError(f"no unsampled article left in stratum {row['stratum']}")
+    pick = pool.iloc[int(np.random.default_rng(REPLACEMENT_SEED_BASE + k).integers(len(pool)))]
+    d.loc[d["sample_id"] == sample_id, ["status", "reason"]] = ["excluded", reason]
+    new_id = f"S{int(d['sample_id'].str[1:].astype(int).max()) + 1:03d}"
+    new = {**row.to_dict(), "sample_id": new_id, "post_id": int(pick["post_id"]),
+           "pub_date": pick["pub_date"].date().isoformat(), "url": pick["url"],
+           "status": "active", "reason": "", "replaces": sample_id}
+    return pd.concat([d, pd.DataFrame([new])], ignore_index=True)
+
+
+def append_to_xlsx(path: Path, rows: pd.DataFrame) -> None:
+    """Append blank-coded rows to an existing labelling workbook without touching
+    existing cells; dropdowns and formatting are extended to the new rows. The
+    caller is responsible for a backup copy."""
+    from copy import copy
+
+    from openpyxl import load_workbook
+
+    wb = load_workbook(path)
+    ws = wb["Labels"]
+    cols = [c.value for c in ws[1]]
+    template = ws.max_row
+    for _, r in rows.iterrows():
+        values = [r.get(c, "") if c in ("sample_id", "title", "text") else None for c in cols]
+        ws.append(values)
+        new = ws.max_row
+        for j in range(1, len(cols) + 1):
+            src, dst = ws.cell(template, j), ws.cell(new, j)
+            dst.alignment, dst.fill, dst.font = copy(src.alignment), copy(src.fill), copy(src.font)
+        ws.row_dimensions[new].height = ws.row_dimensions[template].height
+    last = ws.max_row
+    for dv in ws.data_validations.dataValidation:
+        letter = str(dv.sqref).split(":")[0].rstrip("0123456789")
+        dv.sqref = type(dv.sqref)(f"{letter}2:{letter}{last}")
+    wb.save(path)
+
+
 def draw_recode(design: pd.DataFrame, n: int = 30, seed: int = 43) -> list[str]:
     """sample_ids for the intra-coder reliability re-coding, in a fresh random order."""
     rng = np.random.default_rng(seed)
-    ids = design["sample_id"].sort_values().to_numpy()
+    design = ensure_status(design)
+    ids = design.loc[design["status"] == "active", "sample_id"].sort_values().to_numpy()
     return list(ids[rng.choice(len(ids), n, replace=False)])
 
 
@@ -80,8 +150,10 @@ CODEBOOK_SUMMARY = [
                   "fields/pipelines/gas power. NOT LPG cylinders, crude oil/EACOP, petrol/diesel/HFO, hydropower."),
     ("gas_mention", "substantive", "At least one full sentence says something about gas itself (T4)."),
     ("gas_mention", "resource_list", "Gas only as an item in a list of national resources (T1)."),
-    ("gas_mention", "energy_mix_list", "Gas only as an item in a list of energy sources (T1b)."),
-    ("gas_mention", "none", "No natural gas mention."),
+    ("gas_mention", "energy_mix_list", "Gas only as an item in a list of energy sources (T1b), or of projects, "
+                                       "sectors, facilities, investment areas or traded commodities (T1c: write "
+                                       "proj_list in notes)."),
+    ("gas_mention", "none", "No natural gas mention, or gas only inside the sector name 'oil and gas' (T4a)."),
     ("gas_tone", "positive", "Benefit/success/progress, incl. factual growth ('production doubled') (T2a)."),
     ("gas_tone", "neutral", "Procedural, no outcome: tenders, meetings, bare announcements, levels without "
                             "change; gas replaced (e.g. by JNHPP) without unfavourable judgement (T5)."),
