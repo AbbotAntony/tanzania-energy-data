@@ -1,0 +1,8 @@
+series,basis,from,to,value_from_mmscf,value_to_mmscf,change_pct
+BoT total consumption,calendar year,2023,2024,83467.70000000001,67596.3,-19.0
+BoT gas for power,calendar year,2023,2024,71234.0,54768.1,-23.1
+BoT total consumption,fiscal year (Jul-Jun),2022/23,2023/24,80882.3,80334.5,-0.7
+BoT total consumption,fiscal year (Jul-Jun),2023/24,2024/25,80334.5,59822.0,-25.5
+BoT gas for power,fiscal year (Jul-Jun),2022/23,2023/24,68787.6,68336.8,-0.7
+BoT gas for power,fiscal year (Jul-Jun),2023/24,2024/25,68336.8,44970.9,-34.2
+GASCO throughput (author's data),calendar year,2023,2024,49148.0,42017.0,-14.5

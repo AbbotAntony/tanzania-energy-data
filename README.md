@@ -271,9 +271,9 @@ like a source error; such cases stay flagged in `qa_discrepancies.csv`.
 
 ## NLP analysis: how Daily News covers natural gas
 
-*Work in progress. Tasks 1–2 (corpus preparation and topic models) are done.
-Sentiment validation, the framing classifier and the link to the energy series
-come next.*
+*Work in progress. Tasks 1, 2 and 5 are done: corpus preparation, topic models,
+and the link to the energy series. Tone validation (Task 3) is waiting for hand
+labels, and the framing classifier (Task 4) follows it.*
 
 The analysis asks three questions:
 
@@ -295,6 +295,7 @@ nlp\.venv\Scripts\python.exe nlp\scripts\01_prep.py             # clean corpus, 
 nlp\.venv\Scripts\python.exe nlp\scripts\02_topics_nmf.py       # NMF baseline (~9 min k-sweep)
 nlp\.venv\Scripts\python.exe nlp\scripts\02b_topics_bertopic.py # BERTopic + comparison
 nlp\.venv\Scripts\python.exe nlp\scripts\02c_gas_mentions.py    # gas discussed vs listed
+nlp\.venv\Scripts\python.exe nlp\scripts\05_link_energy.py      # coverage vs BoT gas consumption
 cd nlp; .venv\Scripts\python.exe -m pytest                        # tests
 ```
 
@@ -374,8 +375,42 @@ specific Hub commit.
     because NMF's topic is broader.
 * **Hydropower.** The JNHPP dam topic is largest in 2022–23, while the dam was being
   built. It falls by about 5 points of coverage between the two periods. The first
-  turbine (2024-Q1) shows up as a one-quarter jump in articles tagged JNHPP. A formal
-  comparison with the gas consumption series is Task 5.
+  turbine (2024-Q1) shows up as a one-quarter jump in articles tagged JNHPP.
+* **Coverage and the gas-to-hydro shift** (`link_*.csv`, `link_gas_jnhpp.png`).
+  This compares quarterly coverage with BoT/TPDC quarterly gas consumption
+  (latest editions). It is descriptive only.
+  * **The size of the drop depends on the series and basis:**
+
+    | Series | Basis | Change |
+    |---|---|---|
+    | BoT/TPDC total gas consumption | calendar year, 2023 → 2024 | **−19.0%** |
+    | BoT/TPDC gas for power | calendar year, 2023 → 2024 | −23.1% |
+    | BoT/TPDC total gas consumption | fiscal year, 2023/24 → 2024/25 | −25.5% |
+    | GASCO throughput (author's data) | calendar year, 2023 → 2024 | −14.5% |
+
+    The series differ in coverage and basis, so they should not be compared as
+    if they measured the same thing.
+  * **Timing.** Gas for power first falls below its 2023 range in 2024-Q2, and
+    the largest quarterly fall is in 2024-Q3. This follows the first JNHPP
+    turbines: turbine 9 in February 2024, and three turbines (705 MW) by July
+    2024. Milestone dates come from Daily News reports (`jnhpp_milestones.csv`).
+  * **Coverage *tracks* JNHPP events rather than gas use.**
+    * Articles focused on JNHPP peak at reservoir impounding (2022-Q4), six
+      quarters before the drop.
+    * Articles mentioning JNHPP peak in 2024-Q1, when the first turbine came on.
+    * Gas coverage shows no matching fall: the share of articles mentioning gas
+      dips in 2024-Q1, then rises.
+  * **No lead/lag relation between coverage and gas use.** The analysis
+    correlates quarter-on-quarter changes in coverage with changes in gas for
+    power, at leads and lags up to ±3 quarters (about 11–14 quarters each).
+    * Only 1 of 28 correlations passes the 5% threshold, which is about what
+      chance alone would produce.
+    * Its sign is also the opposite of "coverage anticipates the drop".
+    * The coverage series therefore neither anticipates nor explains the fall in
+      gas use. Both follow the physical arrival of JNHPP capacity.
+  * **Data note.** The latest edition repeats the Sep-2022 value for Dec-2022.
+    That value is kept as published and flagged, and results are repeated
+    without it. 2022-Q2 is not reported.
 
 ### Limitations
 
@@ -392,4 +427,5 @@ specific Hub commit.
   (k is fixed and sensitivity-tested). BERTopic leaves 20% of articles as outliers.
   Topic labels are the author's.
 * **Descriptive only.** None of these results identify causal effects of coverage
-  on gas use.
+  on gas use. The quarterly overlap with the gas data is short (2022-Q3 to
+  2026-Q1), so the lead/lag analysis has little statistical power.
